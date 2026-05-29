@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #1e293b;
+  --surface-muted: #eef2f5;
+  --navy: #1a2e28;
+  --navy-deep: #0f1f1a;
+  --norway-blue: #5bafd4;
+  --norway-blue-hover: #4a9ec4;
+  --norway-red: #1b4332;
+  --border-light: #cbd5e1;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-navy: var(--navy);
+  --color-norway-blue: var(--norway-blue);
+  --color-norway-red: var(--norway-red);
+  --color-surface-muted: var(--surface-muted);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.bg-navy {
+  background-color: var(--navy);
+}
+
+.bg-navy-deep {
+  background-color: var(--navy-deep);
+}
+
+.bg-surface-muted {
+  background-color: var(--surface-muted);
+}
+
+.text-norway-blue {
+  color: var(--norway-blue);
+}
+
+.border-norway-red {
+  border-color: var(--norway-red);
+}
+
+.accent-bar-blue {
+  background-color: var(--norway-blue);
+}
+
+.accent-bar-red {
+  background-color: var(--norway-red);
+}
+
+.accent-bar-green {
+  background-color: var(--norway-red);
+}
+
+.btn-primary {
+  display: inline-block;
+  border-radius: 9999px;
+  background-color: var(--norway-blue);
+  padding: 0.625rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--norway-blue-hover);
+}
+
+.btn-secondary {
+  display: inline-block;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  background-color: rgb(255 255 255 / 0.1);
+  padding: 0.625rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  backdrop-filter: blur(4px);
+  transition: background-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background-color: rgb(255 255 255 / 0.2);
+}
+
+.btn-primary-on-light {
+  display: inline-block;
+  border-radius: 9999px;
+  background-color: var(--norway-blue);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary-on-light:hover {
+  background-color: var(--norway-blue-hover);
+}
+
+.page-hero {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.page-hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgb(15 31 26 / 0.78) 0%,
+    rgb(26 46 40 / 0.62) 100%
+  );
+}
+
+.page-hero-overlay-light {
+  background: linear-gradient(
+    180deg,
+    rgb(15 31 26 / 0.5) 0%,
+    rgb(26 46 40 / 0.38) 50%,
+    rgb(26 46 40 / 0.55) 100%
+  );
+}
+
+.hero-content h1,
+.hero-content p,
+.hero-content a {
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.45), 0 4px 16px rgb(0 0 0 / 0.25);
+}
+
+.badge-accent-red {
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-left: 3px solid var(--norway-red);
+  background-color: rgb(255 255 255 / 0.12);
+}
+
+.badge-hero-red {
+  background-color: var(--norway-red);
+  color: #ffffff;
+}
+
+.content-link {
+  font-weight: 500;
+  color: var(--norway-blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.content-link:hover {
+  color: var(--norway-blue-hover);
+}
