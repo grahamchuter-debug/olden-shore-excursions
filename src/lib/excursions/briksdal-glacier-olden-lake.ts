@@ -6,7 +6,7 @@ export const briksdalGlacierOldenLakeExcursion: ExcursionData = {
   path: "/excursions/briksdal-glacier-olden-lake",
   title: "Briksdal Glacier and Olden Lake Discovery",
   headline: "Briksdal Glacier and Olden Lake Discovery for Cruise Passengers",
-  lead: "The headline Olden shore excursion — a guided journey to Briksdal Glacier, Olden Lake valley scenery, waterfalls, and a scenic drive from the cruise port with timings designed for your ship's schedule.",
+  lead: "The headline Olden shore excursion, a guided journey to Briksdal Glacier, Olden Lake valley scenery, waterfalls, and a scenic drive from the cruise port with timings designed for your ship's schedule.",
   metaTitle: "Briksdal Glacier and Olden Lake Discovery for Cruise Passengers",
   metaDescription:
     "Headline Olden shore excursion to Briksdal Glacier, Olden Lake, waterfalls, and valley scenery. Cruise-friendly timing for first-time visitors.",
@@ -14,7 +14,7 @@ export const briksdalGlacierOldenLakeExcursion: ExcursionData = {
   heroImageAlt: imageAlts.briksdalTourCard,
   heroBadge: "Headline Olden shore excursion",
   summary: {
-    duration: "Approx. 4–5 hours",
+    duration: "Approx. 4 to 5 hours",
     meetingPoint: "Olden village centre near cruise pier",
     returnReassurance:
       "Coach timings designed for typical cruise port schedules",
@@ -23,8 +23,8 @@ export const briksdalGlacierOldenLakeExcursion: ExcursionData = {
   },
   snapshotCards: [
     { label: "Highlights", value: "Briksdal Glacier, Olden Lake, waterfalls" },
-    { label: "Fitness level", value: "Easy to moderate — short walks at glacier" },
-    { label: "Port call fit", value: "Ideal for 4–8 hour visits" },
+    { label: "Fitness level", value: "Easy to moderate, short walks at glacier" },
+    { label: "Port call fit", value: "Ideal for 4 to 8 hour visits" },
     { label: "Scenery", value: "Glacier valley and lake landscapes" },
   ],
   gallery: [
@@ -34,7 +34,7 @@ export const briksdalGlacierOldenLakeExcursion: ExcursionData = {
     { src: siteImages.harbour, alt: imageAlts.harbour },
   ],
   highlights: [
-    "Briksdal Glacier — accessible arm of Jostedalsbreen",
+    "Briksdal Glacier, accessible arm of Jostedalsbreen",
     "Olden Lake and Oldedalen valley scenery",
     "Waterfalls along the scenic drive from Olden",
     "Photo stops at glacier viewpoints",
@@ -42,9 +42,9 @@ export const briksdalGlacierOldenLakeExcursion: ExcursionData = {
     "Expert commentary on glacier geology and local history",
   ],
   description: [
-    "Briksdalsbreen is one of the most accessible glacier arms in Norway — and the reason most cruise passengers choose to go ashore in Olden. This discovery tour combines the glacier terminus, glacial lake scenery, and the dramatic Oldedalen valley in one carefully timed shore excursion.",
+    "Briksdalsbreen is one of the most accessible glacier arms in Norway, and the reason most cruise passengers choose to go ashore in Olden. This discovery tour combines the glacier terminus, glacial lake scenery, and the dramatic Oldedalen valley in one carefully timed shore excursion.",
     "The scenic drive from Olden pier follows the valley south through pine forests and past waterfalls before reaching Briksdal. At the glacier, short walks lead to viewpoints where you can see the ice, the lake, and the surrounding peaks that define this Nordfjord landscape.",
-    "Designed for cruise passengers, the tour accounts for typical port windows and return-to-ship requirements. You spend your hours ashore on glacier and valley scenery rather than in unnecessary transfers — making this the signature choice when you have four or more hours in Olden.",
+    "Designed for cruise passengers, the tour accounts for typical port windows and return-to-ship requirements. You spend your hours ashore on glacier and valley scenery rather than in unnecessary transfers, making this the signature choice when you have four or more hours in Olden.",
   ],
   included: [
     "Guided Briksdal Glacier and Olden Lake tour",
@@ -59,9 +59,9 @@ export const briksdalGlacierOldenLakeExcursion: ExcursionData = {
   ],
   timingAdvice: [
     "Best suited to port calls of four hours or more.",
-    "Disembark promptly — Briksdal tours fill on multi-ship days.",
-    "Keep 30–45 minutes before all aboard to reach the cruise pier.",
-    "Weather can affect visibility at the glacier — pack a waterproof layer.",
+    "Disembark promptly, Briksdal tours fill on multi-ship days.",
+    "Keep 30 to 45 minutes before all aboard to reach the cruise pier.",
+    "Weather can affect visibility at the glacier, pack a waterproof layer.",
   ],
   faqs: [
     {

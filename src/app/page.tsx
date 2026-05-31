@@ -42,7 +42,7 @@ const homeFaqs = [
   {
     question: "Is Olden worth visiting from a cruise ship?",
     answer:
-      "Yes — Olden is one of Norway's most scenic cruise ports, with Briksdal Glacier, glacial lakes, waterfalls, and dramatic valley scenery. Most passengers find it a highlight of their Nordfjord itinerary.",
+      "Yes, Olden is one of Norway's most scenic cruise ports, with Briksdal Glacier, glacial lakes, waterfalls, and dramatic valley scenery. Most passengers find it a highlight of their Nordfjord itinerary.",
   },
   {
     question: "How long should I spend in Olden?",
@@ -163,14 +163,14 @@ export default function Home() {
               Why Olden Is Ideal for Cruise Shore Excursions
             </h2>
             <p className="text-base leading-8 text-slate-700 sm:text-lg">
-              Olden sits at the head of Nordfjord beneath Jostedalsbreen —
+              Olden sits at the head of Nordfjord beneath Jostedalsbreen , 
               Europe&apos;s largest mainland glacier. Cruise passengers arrive
               directly at a compact village pier, then reach Briksdal Glacier,
               glacial lakes, and Loen Skylift on shore excursions timed for
               return-to-ship schedules.
             </p>
             <ul className="mt-6 list-disc space-y-2 pl-5 text-base leading-8 text-slate-700">
-              <li>Briksdal Glacier — one of Norway&apos;s most accessible glacier arms</li>
+              <li>Briksdal Glacier, one of Norway&apos;s most accessible glacier arms</li>
               <li>Olden Lake and Oldedalen valley with waterfalls and pine forests</li>
               <li>Loen Skylift to Mount Hoven for dramatic fjord panoramas</li>
               <li>Compact village with easy shore access from the cruise pier</li>
@@ -217,7 +217,7 @@ export default function Home() {
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
               Browse shore excursions, read the port guide, and use the Cruise
-              Smart Planner — everything built for cruise passengers who need
+              Smart Planner, everything built for cruise passengers who need
               to return on time.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">

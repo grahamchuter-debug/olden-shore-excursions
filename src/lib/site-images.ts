@@ -60,11 +60,11 @@ export const imageAlts = {
   village:
     "Olden village nestled at the head of Nordfjord with cruise-friendly harbour area",
   harbour:
-    "Olden harbour and waterfront with Nordfjord mountains — Olden cruise port, Norway",
+    "Olden harbour and waterfront with Nordfjord mountains, Olden cruise port, Norway",
   portGuide:
     "Olden cruise port waterfront with mountains rising above Nordfjord",
   worthVisiting:
-    "Briksdal Glacier waterfall and glacial scenery — why Olden is a top Norway cruise port",
+    "Briksdal Glacier waterfall and glacial scenery, why Olden is a top Norway cruise port",
   briksdalTourCard:
     "Briksdalsbreen glacier and Olden Lake valley on the headline Olden shore excursion",
   privateBriksdalTourCard:
@@ -76,13 +76,13 @@ export const imageAlts = {
   lakesGlaciersTourCard:
     "Glacial lakes, waterfalls, and valley scenery on a scenic Olden countryside tour",
   flamPortCard:
-    "Flam harbour with cruise ship at the pier — Flam Shore Excursions",
+    "Flam harbour with cruise ship at the pier, Flam Shore Excursions",
   bergenPortCard:
-    "Bergen harbour and waterfront — Bergen Shore Excursions",
+    "Bergen harbour and waterfront, Bergen Shore Excursions",
   stavangerPortCard:
-    "Stavanger harbour with cruise-friendly waterfront — Stavanger Shore Excursions",
+    "Stavanger harbour with cruise-friendly waterfront, Stavanger Shore Excursions",
   alesundPortCard:
-    "Alesund harbour with cruise-friendly waterfront — Alesund Shore Excursions",
+    "Alesund harbour with cruise-friendly waterfront, Alesund Shore Excursions",
   geirangerPortCard:
-    "Geirangerfjord viewpoint with cruise ship — Geiranger Shore Excursions",
+    "Geirangerfjord viewpoint with cruise ship, Geiranger Shore Excursions",
 } as const;

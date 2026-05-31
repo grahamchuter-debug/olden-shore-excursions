@@ -26,7 +26,7 @@ const faqs = [
   {
     question: "What is the best month for Olden cruise shore excursions?",
     answer:
-      "May through September offers the most reliable Briksdal Glacier access, Loen Skylift operation, and walkable weather for village tours. June and July are busiest — book excursions early.",
+      "May through September offers the most reliable Briksdal Glacier access, Loen Skylift operation, and walkable weather for village tours. June and July are busiest, book excursions early.",
   },
   {
     question: "Is Olden crowded in summer?",
@@ -41,7 +41,7 @@ const faqs = [
   {
     question: "Does weather affect Briksdal Glacier and Loen Skylift tours?",
     answer:
-      "Valley rain and cloud can enhance waterfall scenery but reduce distant views from Mount Hoven. Glacier tours usually run in most conditions — pack waterproof layers regardless of season.",
+      "Valley rain and cloud can enhance waterfall scenery but reduce distant views from Mount Hoven. Glacier tours usually run in most conditions, pack waterproof layers regardless of season.",
   },
 ] as const;
 
@@ -63,7 +63,7 @@ export default function BestTimeToVisitOldenPage() {
           Most Olden cruise calls arrive between late spring and early autumn.
           Longer daylight, active glacier excursion operators, and operating
           Loen Skylift make this the best window for shore excursions. June
-          through August sees the highest ship volumes — plan ahead.
+          through August sees the highest ship volumes, plan ahead.
         </p>
       </section>
 
@@ -71,7 +71,7 @@ export default function BestTimeToVisitOldenPage() {
         <h2>June and July: best glacier scenery, busiest ports</h2>
         <p>
           Mid-summer delivers the classic Norway glacier experience cruise guests
-          expect — green valley walls, accessible Briksdal viewpoints, and full
+          expect, green valley walls, accessible Briksdal viewpoints, and full
           excursion timetables. Book Briksdal Glacier and Loen Skylift tours in
           advance on multi-ship days.
         </p>
@@ -101,8 +101,8 @@ export default function BestTimeToVisitOldenPage() {
         <h2>Planning tips whatever month you visit</h2>
         <ul>
           <li>Pre-book headline glacier excursions on peak summer itineraries</li>
-          <li>Pack a waterproof layer — valley weather shifts quickly</li>
-          <li>Build 30–45 minutes buffer before all aboard every season</li>
+          <li>Pack a waterproof layer, valley weather shifts quickly</li>
+          <li>Build 30 to 45 minutes buffer before all aboard every season</li>
           <li>
             Read the{" "}
             <Link href="/olden-port-guide">port guide</Link> for pier walking

@@ -26,12 +26,12 @@ const faqs = [
   {
     question: "What can cruise passengers do in Olden with only four hours ashore?",
     answer:
-      "Focus on the Olden Walking and Village Highlights tour or a self-guided harbour stroll. Skip Briksdal Glacier and Loen Skylift — they need more time than a four-hour window allows comfortably.",
+      "Focus on the Olden Walking and Village Highlights tour or a self-guided harbour stroll. Skip Briksdal Glacier and Loen Skylift, they need more time than a four-hour window allows comfortably.",
   },
   {
     question: "Can I visit Briksdal Glacier and Loen Skylift in one Olden day?",
     answer:
-      "Only if your ship stays at least eight hours. Both experiences need road transport and several hours each — combining them on shorter port calls risks missing all aboard.",
+      "Only if your ship stays at least eight hours. Both experiences need road transport and several hours each, combining them on shorter port calls risks missing all aboard.",
   },
   {
     question: "Should I book Olden excursions before my cruise arrives?",
@@ -41,7 +41,7 @@ const faqs = [
   {
     question: "How much buffer time should I leave before all aboard?",
     answer:
-      "Aim to be at the cruise pier 30–45 minutes before the published all-aboard time. Gangway queues can compress that window quickly.",
+      "Aim to be at the cruise pier 30 to 45 minutes before the published all-aboard time. Gangway queues can compress that window quickly.",
   },
 ] as const;
 
@@ -49,7 +49,7 @@ export default function OneDayInOldenPage() {
   return (
     <ContentPage
       title="One Day in Olden"
-      lead="Practical sample itineraries for cruise passengers with 4, 6, or 8+ hours in Olden — focused on Briksdal Glacier, Olden Lake, Loen Skylift, and village time with realistic return-to-ship timing."
+      lead="Practical sample itineraries for cruise passengers with 4, 6, or 8+ hours in Olden, focused on Briksdal Glacier, Olden Lake, Loen Skylift, and village time with realistic return-to-ship timing."
       heroImage={pageMeta.ogImage}
       heroImageAlt={pageMeta.ogImageAlt}
       pagePath={pageMeta.path}
@@ -76,8 +76,8 @@ export default function OneDayInOldenPage() {
             Olden Walking and Village Highlights
           </Link>{" "}
           tour or explore the harbour independently. Enjoy a coffee by the
-          waterfront, browse local shops, and photograph the Nordfjord mountain
-          backdrop. Skip glacier and skylift tours — valley road time exceeds
+          waterfront, browse local shops, and photograph the Olden mountain
+          backdrop. Skip glacier and skylift tours, valley road time exceeds
           your margin.
         </p>
         <ul>
@@ -137,7 +137,7 @@ export default function OneDayInOldenPage() {
       <section>
         <h2>Return to ship</h2>
         <p>
-          Head back to the cruise pier at least 30–45 minutes before all aboard.
+          Head back to the cruise pier at least 30 to 45 minutes before all aboard.
           Use the{" "}
           <Link href="/#planner">Cruise Smart Planner</Link> to validate your
           itinerary against your actual port window before you sail.

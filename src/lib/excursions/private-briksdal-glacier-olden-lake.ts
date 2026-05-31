@@ -6,7 +6,7 @@ export const privateBriksdalGlacierOldenLakeExcursion: ExcursionData = {
   path: "/excursions/private-briksdal-glacier-olden-lake",
   title: "Private Briksdal Glacier and Olden Lake Discovery",
   headline: "Private Briksdal Glacier and Olden Lake Discovery for Cruise Passengers",
-  lead: "Premium private sightseeing to Briksdal Glacier and Olden Lake with flexible pace, glacier viewpoints, and personalised timing — ideal for families, couples, and small groups.",
+  lead: "Premium private sightseeing to Briksdal Glacier and Olden Lake with flexible pace, glacier viewpoints, and personalised timing, ideal for families, couples, and small groups.",
   metaTitle: "Private Briksdal Glacier and Olden Lake Discovery for Cruise Passengers",
   metaDescription:
     "Private Briksdal Glacier and Olden Lake tour from Olden cruise port. Flexible pace, glacier viewpoints, and return-to-ship friendly timings for small groups.",
@@ -14,7 +14,7 @@ export const privateBriksdalGlacierOldenLakeExcursion: ExcursionData = {
   heroImageAlt: imageAlts.privateBriksdalTourCard,
   heroBadge: "Premium private option",
   summary: {
-    duration: "Approx. 5–6 hours (flexible)",
+    duration: "Approx. 5 to 6 hours (flexible)",
     meetingPoint: "Olden cruise pier or agreed village location",
     returnReassurance:
       "Private vehicle with schedule tailored to your ship's timetable",
@@ -42,7 +42,7 @@ export const privateBriksdalGlacierOldenLakeExcursion: ExcursionData = {
     "Ideal for families, couples, and small groups",
   ],
   description: [
-    "A private Briksdal Glacier tour gives you control over pace, stops, and photo time — without sharing a coach with other cruise passengers. Your guide adapts the itinerary to your group's interests while keeping return-to-ship timing as the priority.",
+    "A private Briksdal Glacier tour gives you control over pace, stops, and photo time, without sharing a coach with other cruise passengers. Your guide adapts the itinerary to your group's interests while keeping return-to-ship timing as the priority.",
     "The route follows the same dramatic Oldedalen valley as the group tour, but with flexibility to linger at glacier viewpoints, waterfall stops, and lake scenery. Families with children and couples who prefer a quieter experience often choose this format.",
     "Best suited to longer port calls of eight hours or more, when you have margin for unhurried glacier viewing and optional village time before returning to the pier.",
   ],
@@ -77,12 +77,12 @@ export const privateBriksdalGlacierOldenLakeExcursion: ExcursionData = {
     {
       question: "Is a private tour worth it over the group excursion?",
       answer:
-        "If you value flexible pace, personalised commentary, and extended photo time — especially on a longer port day — the private format often delivers a more relaxed glacier experience.",
+        "If you value flexible pace, personalised commentary, and extended photo time, especially on a longer port day, the private format often delivers a more relaxed glacier experience.",
     },
     {
       question: "Does the private tour include Loen Skylift?",
       answer:
-        "The standard private Briksdal itinerary focuses on glacier and valley scenery. Loen Skylift can sometimes be combined on full-day private bookings — confirm availability when booking.",
+        "The standard private Briksdal itinerary focuses on glacier and valley scenery. Loen Skylift can sometimes be combined on full-day private bookings, confirm availability when booking.",
     },
   ],
   breadcrumbs: [

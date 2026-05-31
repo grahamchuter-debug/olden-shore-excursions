@@ -6,7 +6,7 @@ export const loenSkyliftMountHovenExcursion: ExcursionData = {
   path: "/excursions/loen-skylift-mount-hoven",
   title: "Loen Skylift and Mount Hoven Viewpoint",
   headline: "Loen Skylift and Mount Hoven Viewpoint for Cruise Passengers",
-  lead: "Ride one of the world's steepest cable cars to Mount Hoven for dramatic fjord and mountain panoramas — a photography-focused shore excursion with weather-dependent visibility.",
+  lead: "Ride one of the world's steepest cable cars to Mount Hoven for dramatic fjord and mountain panoramas, a photography-focused shore excursion with weather-dependent visibility.",
   metaTitle: "Loen Skylift and Mount Hoven Viewpoint for Cruise Passengers",
   metaDescription:
     "Loen Skylift and Mount Hoven viewpoint tour from Olden cruise port. Fjord panoramas, dramatic views, and return-to-ship friendly timings for cruise passengers.",
@@ -14,7 +14,7 @@ export const loenSkyliftMountHovenExcursion: ExcursionData = {
   heroImageAlt: imageAlts.loenSkyliftTourCard,
   heroBadge: "Best viewpoint tour",
   summary: {
-    duration: "Approx. 4–5 hours",
+    duration: "Approx. 4 to 5 hours",
     meetingPoint: "Olden village or Loen Skylift base (tour dependent)",
     returnReassurance:
       "Coordinated transport and skylift timings for cruise schedules",
@@ -24,8 +24,8 @@ export const loenSkyliftMountHovenExcursion: ExcursionData = {
   snapshotCards: [
     { label: "Elevation gain", value: "1,011 m to Mount Hoven summit" },
     { label: "Skylift ride", value: "Approx. 5 minutes each way" },
-    { label: "Port call fit", value: "Ideal for 6–8 hour visits" },
-    { label: "Visibility", value: "Weather-dependent — best on clear days" },
+    { label: "Port call fit", value: "Ideal for 6 to 8 hour visits" },
+    { label: "Visibility", value: "Weather-dependent, best on clear days" },
   ],
   gallery: [
     { src: siteImages.loenSkylift, alt: imageAlts.loenSkylift },
@@ -34,7 +34,7 @@ export const loenSkyliftMountHovenExcursion: ExcursionData = {
     { src: siteImages.harbour, alt: imageAlts.harbour },
   ],
   highlights: [
-    "Loen Skylift — one of the steepest cable cars in the world",
+    "Loen Skylift, one of the steepest cable cars in the world",
     "Mount Hoven summit with Nordfjord panoramas",
     "Fjord and mountain views from viewing platforms",
     "Optional time at Hoven Restaurant (own expense)",
@@ -42,7 +42,7 @@ export const loenSkyliftMountHovenExcursion: ExcursionData = {
     "Ideal for photography on clear days",
   ],
   description: [
-    "Loen Skylift lifts you more than 1,000 metres from the fjord to Mount Hoven in approximately five minutes — one of the steepest aerial tramways in the world. At the summit, viewing platforms and the Hoven Restaurant offer sweeping panoramas over Nordfjord, glaciers, and surrounding peaks.",
+    "Loen Skylift lifts you more than 1,000 metres from the fjord to Mount Hoven in approximately five minutes, one of the steepest aerial tramways in the world. At the summit, viewing platforms and the Hoven Restaurant offer sweeping panoramas over Nordfjord, glaciers, and surrounding peaks.",
     "This tour suits cruise passengers who want a dramatic viewpoint experience without the long drive to Briksdal. Visibility is weather-dependent: clear days deliver exceptional photography; cloud and mist can limit distant views but still create atmospheric mountain scenery.",
     "Most shore excursions include transport between Olden and Loen, skylift tickets, and coordinated return timing. Allow enough port hours for the drive, skylift ride, and summit time before heading back to the cruise pier.",
   ],
@@ -59,7 +59,7 @@ export const loenSkyliftMountHovenExcursion: ExcursionData = {
   ],
   timingAdvice: [
     "Best suited to port calls of six hours or more.",
-    "Check weather forecasts — clear days offer the best fjord views.",
+    "Check weather forecasts, clear days offer the best fjord views.",
     "Skylift queues can form on busy days; pre-booked tours often skip ticket lines.",
     "Keep 45 minutes before all aboard for the return drive to Olden pier.",
   ],
@@ -67,12 +67,12 @@ export const loenSkyliftMountHovenExcursion: ExcursionData = {
     {
       question: "How far is Loen Skylift from Olden cruise port?",
       answer:
-        "Loen is approximately 15 km from Olden village, reached by road in around 20–25 minutes. Most tours include transport from the cruise pier.",
+        "Loen is approximately 15 km from Olden village, reached by road in around 20 to 25 minutes. Most tours include transport from the cruise pier.",
     },
     {
       question: "What if the weather is poor on port day?",
       answer:
-        "Cloud and rain can limit visibility from Mount Hoven. Operators may adjust itineraries or offer alternatives — always confirm policy when booking.",
+        "Cloud and rain can limit visibility from Mount Hoven. Operators may adjust itineraries or offer alternatives, always confirm policy when booking.",
     },
     {
       question: "Is Loen Skylift suitable for passengers with limited mobility?",

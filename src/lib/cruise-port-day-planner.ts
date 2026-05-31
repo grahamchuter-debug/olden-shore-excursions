@@ -50,14 +50,14 @@ export const oldenPortDayPlannerConfig: CruisePortDayPlannerConfig = {
       dayPlan: [
         "Disembark promptly and stay within the compact Olden village area",
         "Choose the walking tour or a brief harbour stroll with local viewpoints",
-        "Skip Briksdal Glacier and Loen Skylift — not enough margin on valley roads",
+        "Skip Briksdal Glacier and Loen Skylift, not enough margin on valley roads",
         "Be back at the gangway by your recommended return time",
       ],
     },
     {
       minHours: 4,
       maxHours: 6,
-      label: "4–6 hours",
+      label: "4 to 6 hours",
       confidenceScore: 65,
       confidenceLabel: "Short but Usable Port Call",
       confidenceMessage:
@@ -82,7 +82,7 @@ export const oldenPortDayPlannerConfig: CruisePortDayPlannerConfig = {
     {
       minHours: 6,
       maxHours: 8,
-      label: "6–8 hours",
+      label: "6 to 8 hours",
       confidenceScore: 90,
       confidenceLabel: "Strong Port Call",
       confidenceMessage:

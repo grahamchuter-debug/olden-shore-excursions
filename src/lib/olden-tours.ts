@@ -16,7 +16,7 @@ export const oldenTourCards: readonly OldenTourCard[] = [
     imageAlt: imageAlts.briksdalTourCard,
     title: "Briksdal Glacier and Olden Lake Discovery",
     description:
-      "Headline Olden shore excursion to Briksdal Glacier, Olden Lake valley scenery, waterfalls, and a scenic drive from the cruise port — best for first-time visitors.",
+      "Headline Olden shore excursion to Briksdal Glacier, Olden Lake valley scenery, waterfalls, and a scenic drive from the cruise port, best for first-time visitors.",
     badge: "Headline Tour",
   },
   {
@@ -25,7 +25,7 @@ export const oldenTourCards: readonly OldenTourCard[] = [
     imageAlt: imageAlts.privateBriksdalTourCard,
     title: "Private Briksdal Glacier and Olden Lake Discovery",
     description:
-      "Premium private sightseeing with flexible pace, glacier viewpoints, and Olden Lake scenery — ideal for families, couples, and small groups.",
+      "Premium private sightseeing with flexible pace, glacier viewpoints, and Olden Lake scenery, ideal for families, couples, and small groups.",
     badge: "Private Option",
   },
   {
@@ -34,7 +34,7 @@ export const oldenTourCards: readonly OldenTourCard[] = [
     imageAlt: imageAlts.loenSkyliftTourCard,
     title: "Loen Skylift and Mount Hoven Viewpoint",
     description:
-      "Dramatic fjord and mountain views from Mount Hoven via Loen Skylift — a photography-focused tour with weather-dependent visibility.",
+      "Dramatic fjord and mountain views from Mount Hoven via Loen Skylift, a photography-focused tour with weather-dependent visibility.",
     badge: "Best Viewpoint",
   },
   {
@@ -43,7 +43,7 @@ export const oldenTourCards: readonly OldenTourCard[] = [
     imageAlt: imageAlts.walkingTourCard,
     title: "Olden Walking and Village Highlights",
     description:
-      "Easy walking tour through Olden village, harbour area, local history, and scenic viewpoints — the short-port option.",
+      "Easy walking tour through Olden village, harbour area, local history, and scenic viewpoints, the short-port option.",
     badge: "Cruise Friendly",
   },
   {

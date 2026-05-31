@@ -6,7 +6,7 @@ export const lakesGlaciersWaterfallsExcursion: ExcursionData = {
   path: "/excursions/lakes-glaciers-waterfalls",
   title: "Scenic Lakes, Glaciers and Waterfalls Tour",
   headline: "Scenic Lakes, Glaciers and Waterfalls Tour for Cruise Passengers",
-  lead: "A nature-focused countryside tour through glacial lakes, waterfalls, and dramatic valley scenery with photo stops — a scenic cruise excursion beyond the village.",
+  lead: "A nature-focused countryside tour through glacial lakes, waterfalls, and dramatic valley scenery with photo stops, a scenic cruise excursion beyond the village.",
   metaTitle: "Scenic Lakes, Glaciers and Waterfalls Tour for Cruise Passengers",
   metaDescription:
     "Scenic Olden countryside tour with glacial lakes, waterfalls, valley scenery, and photo stops. Nature-focused shore excursion for cruise passengers.",
@@ -14,7 +14,7 @@ export const lakesGlaciersWaterfallsExcursion: ExcursionData = {
   heroImageAlt: imageAlts.lakesGlaciersTourCard,
   heroBadge: "Scenic countryside tour",
   summary: {
-    duration: "Approx. 4–5 hours",
+    duration: "Approx. 4 to 5 hours",
     meetingPoint: "Olden village centre near cruise pier",
     returnReassurance:
       "Coach route timed for typical cruise port schedules",
@@ -23,8 +23,8 @@ export const lakesGlaciersWaterfallsExcursion: ExcursionData = {
   },
   snapshotCards: [
     { label: "Highlights", value: "Glacial lakes, waterfalls, valley views" },
-    { label: "Fitness level", value: "Easy — photo stops with short walks" },
-    { label: "Port call fit", value: "Ideal for 4–6 hour visits" },
+    { label: "Fitness level", value: "Easy, photo stops with short walks" },
+    { label: "Port call fit", value: "Ideal for 4 to 6 hour visits" },
     { label: "Focus", value: "Nature and landscape photography" },
   ],
   gallery: [
@@ -42,7 +42,7 @@ export const lakesGlaciersWaterfallsExcursion: ExcursionData = {
     "Cruise-friendly timing from Olden cruise port",
   ],
   description: [
-    "This scenic countryside tour explores the landscapes that surround Olden — glacial lakes, cascading waterfalls, and the steep-walled valleys that make Nordfjord one of Norway's most photogenic regions. It suits passengers who want broad nature scenery without necessarily reaching the Briksdal glacier terminus.",
+    "This scenic countryside tour explores the landscapes that surround Olden, glacial lakes, cascading waterfalls, and the steep-walled valleys that make Nordfjord one of Norway's most photogenic regions. It suits passengers who want broad nature scenery without necessarily reaching the Briksdal glacier terminus.",
     "The route typically follows valley roads south from Olden with stops at viewpoints, lakes, and waterfall areas. Your guide explains the glacial history of the region and points out photo opportunities along the way.",
     "A strong choice for port calls of four to six hours when you want more than a village walk but need a tighter schedule than a full Briksdal and Loen combination day.",
   ],
@@ -59,8 +59,8 @@ export const lakesGlaciersWaterfallsExcursion: ExcursionData = {
   ],
   timingAdvice: [
     "Best suited to port calls of four to six hours.",
-    "Bring a camera — this tour emphasises landscape photography stops.",
-    "Weather affects waterfall volume and lake colour — both are dramatic in rain or sun.",
+    "Bring a camera, this tour emphasises landscape photography stops.",
+    "Weather affects waterfall volume and lake colour, both are dramatic in rain or sun.",
     "Keep 45 minutes before all aboard for the return to Olden pier.",
   ],
   faqs: [

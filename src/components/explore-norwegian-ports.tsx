@@ -44,19 +44,6 @@ export function ExploreNorwegianPorts({
           <div className="text-base leading-7 text-slate-700 sm:leading-8">
             {config.intro}
           </div>
-
-          <ul className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-2">
-            {config.cards.map((card) => (
-              <li key={card.titleHref}>
-                <a
-                  href={card.titleHref}
-                  className="font-medium text-[var(--norway-blue)] underline-offset-2 transition hover:underline"
-                >
-                  {card.title}
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
     );
@@ -164,7 +151,7 @@ export const explorePortsFromOlden: ExploreNorwegianPortsConfig = {
       >
         Geiranger Shore Excursions
       </a>{" "}
-      — each with port guides, tour comparisons, and Cruise Smart Planners built
+     , each with port guides, tour comparisons, and Cruise Smart Planners built
       for passengers on the same sailing.
     </>
   ),

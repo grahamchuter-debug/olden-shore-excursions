@@ -27,7 +27,7 @@ const faqs = [
   {
     question: "Is Olden worth visiting from a cruise ship?",
     answer:
-      "Yes — Olden is one of the most scenic ports on any Norwegian fjord itinerary. Briksdal Glacier, glacial lakes, waterfalls, and dramatic valley scenery make it a highlight for most cruise passengers.",
+      "Yes, Olden is one of the most scenic ports on any Norwegian fjord itinerary. Briksdal Glacier, glacial lakes, waterfalls, and dramatic valley scenery make it a highlight for most cruise passengers.",
   },
   {
     question: "How long should I spend in Olden?",
@@ -37,7 +37,7 @@ const faqs = [
   {
     question: "Can I see a glacier from Olden cruise port?",
     answer:
-      "Yes. Briksdal Glacier is reached by shore excursion through Oldedalen valley — one of Norway's most accessible glacier experiences from a cruise port.",
+      "Yes. Briksdal Glacier is reached by shore excursion through Oldedalen valley, one of Norway's most accessible glacier experiences from a cruise port.",
   },
   {
     question: "What is the best Olden shore excursion?",
@@ -52,7 +52,7 @@ const faqs = [
   {
     question: "Why is Olden considered one of Norway's most scenic cruise ports?",
     answer:
-      "Olden combines an accessible glacier arm, turquoise glacial lakes, waterfall-filled valleys, and Loen Skylift viewpoints — all within easy reach of the cruise pier in a compact Nordfjord setting.",
+      "Olden combines an accessible glacier arm, turquoise glacial lakes, waterfall-filled valleys, and Loen Skylift viewpoints, all within easy reach of the cruise pier in a compact Nordfjord setting.",
   },
 ] as const;
 
@@ -60,7 +60,7 @@ export default function IsOldenWorthVisitingPage() {
   return (
     <ContentPage
       title="Is Olden Worth Visiting?"
-      lead="An honest look at whether Olden deserves your hours ashore — glacier scenery, lakes, waterfalls, dramatic valley setting, and why Olden ranks among Norway's most scenic cruise ports."
+      lead="An honest look at whether Olden deserves your hours ashore, glacier scenery, lakes, waterfalls, dramatic valley setting, and why Olden ranks among Norway's most scenic cruise ports."
       heroImage={pageMeta.ogImage}
       heroImageAlt={pageMeta.ogImageAlt}
       pagePath={pageMeta.path}
@@ -72,8 +72,8 @@ export default function IsOldenWorthVisitingPage() {
         <h2>Short answer: yes for most cruise itineraries</h2>
         <p>
           Olden is one of the strongest scenic ports in Norway. You get
-          Briksdal Glacier — an accessible arm of Europe&apos;s largest
-          mainland ice cap — plus glacial lakes, waterfalls, and Loen Skylift
+          Briksdal Glacier, an accessible arm of Europe&apos;s largest
+          mainland ice cap, plus glacial lakes, waterfalls, and Loen Skylift
           viewpoints above Nordfjord. For most guests, going ashore is
           absolutely worthwhile.
         </p>
@@ -87,7 +87,7 @@ export default function IsOldenWorthVisitingPage() {
           <Link href="/excursions/briksdal-glacier-olden-lake">
             Briksdal Glacier and Olden Lake Discovery
           </Link>{" "}
-          tour puts you at the heart of this landscape — the experience that
+          tour puts you at the heart of this landscape, the experience that
           defines Olden as a cruise destination.
         </p>
       </section>
@@ -111,7 +111,7 @@ export default function IsOldenWorthVisitingPage() {
           <li>Accessible glacier arm within reach of the cruise pier</li>
           <li>Glacial lakes and waterfall-filled valley roads</li>
           <li>Loen Skylift to Mount Hoven for fjord panoramas</li>
-          <li>Compact village — no long transfers to reach excursions</li>
+          <li>Compact village, no long transfers to reach excursions</li>
           <li>Dramatic mountain backdrop visible from the ship and shore</li>
           <li>Range of tours from walking to private glacier sightseeing</li>
         </ul>
@@ -122,7 +122,7 @@ export default function IsOldenWorthVisitingPage() {
         <p>
           Most ships dock at the village pier with immediate access to the
           harbour. Excursion meeting points, cafés, and shops are minutes from
-          the gangway — so you spend port time on glacier and valley experiences
+          the gangway, so you spend port time on glacier and valley experiences
           rather than in transfers.
         </p>
       </section>
@@ -133,7 +133,7 @@ export default function IsOldenWorthVisitingPage() {
           If your port time is under three hours, severe weather limits
           visibility, or you have mobility limits without a suitable tour,
           staying aboard may be safer. Very tight schedules rarely fit Briksdal
-          or Loen Skylift comfortably — though even a short village walk
+          or Loen Skylift comfortably, though even a short village walk
           delivers authentic Nordfjord atmosphere.
         </p>
       </section>

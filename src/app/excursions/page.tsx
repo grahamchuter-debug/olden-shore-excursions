@@ -10,7 +10,7 @@ import { buildItemListSchema } from "@/lib/site-schema";
 import { imageAlts, siteImages } from "@/lib/site-images";
 
 const pageMeta = {
-  title: "Olden Excursions — All Shore Tours for Cruise Passengers",
+  title: "Olden Excursions, All Shore Tours for Cruise Passengers",
   description:
     "Browse all Olden shore excursions for cruise passengers: Briksdal Glacier, private glacier tours, Loen Skylift, walking tours, and scenic lakes and waterfalls experiences.",
   path: "/excursions",
@@ -40,12 +40,12 @@ const faqs = [
   {
     question: "How do I choose between Olden shore excursions?",
     answer:
-      "Match the tour to your hours ashore: walking tours suit under-four-hour calls; Briksdal and scenic lakes tours suit 4–6 hours; Briksdal or Loen Skylift suit 6–8 hours; private glacier and full valley combinations need 8+ hours. Use the Cruise Smart Planner on the homepage.",
+      "Match the tour to your hours ashore: walking tours suit under-four-hour calls; Briksdal and scenic lakes tours suit 4 to 6 hours; Briksdal or Loen Skylift suit 6 to 8 hours; private glacier and full valley combinations need 8+ hours. Use the Cruise Smart Planner on the homepage.",
   },
   {
     question: "Do all Olden excursions depart near the cruise port?",
     answer:
-      "Yes. Featured tours meet in Olden village centre near the cruise pier — typically within a few minutes of where you come ashore.",
+      "Yes. Featured tours meet in Olden village centre near the cruise pier, typically within a few minutes of where you come ashore.",
   },
 ] as const;
 
@@ -55,7 +55,7 @@ export default function ExcursionsIndexPage() {
       <JsonLd data={[buildItemListSchema(oldenTourListItems)]} />
       <ContentPage
         title="Olden Excursions"
-        lead="Every cruise-friendly shore excursion in Olden — Briksdal Glacier, Loen Skylift, village walks, and scenic valley touring — with return-to-ship timing in mind."
+        lead="Every cruise-friendly shore excursion in Olden, Briksdal Glacier, Loen Skylift, village walks, and scenic valley touring, with return-to-ship timing in mind."
         heroImage={pageMeta.ogImage}
         heroImageAlt={pageMeta.ogImageAlt}
         pagePath={pageMeta.path}

@@ -84,7 +84,7 @@ export function ContentPage({
           </p>
           {showShipReassurance ? (
             <p className="badge-accent-red mt-5 inline-flex rounded-full px-4 py-1.5 text-xs font-medium text-white/95 backdrop-blur-sm sm:text-sm">
-              Return to ship on time — cruise passenger friendly
+              Return to ship on time, cruise passenger friendly
             </p>
           ) : null}
         </PageHero>
