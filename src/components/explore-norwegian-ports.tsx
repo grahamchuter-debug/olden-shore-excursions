@@ -151,7 +151,7 @@ export const explorePortsFromOlden: ExploreNorwegianPortsConfig = {
       >
         Geiranger Shore Excursions
       </a>{" "}
-     , each with port guides, tour comparisons, and Cruise Smart Planners built
+     , each with port guides, tour comparisons, and port-day planners built
       for passengers on the same sailing.
     </>
   ),

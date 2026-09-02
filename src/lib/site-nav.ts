@@ -1,6 +1,6 @@
 export const siteNavLinks = [
   { label: "Excursions", href: "/excursions" },
-  { label: "Port Guide", href: "/olden-port-guide" },
-  { label: "One Day", href: "/one-day-in-olden" },
-  { label: "Worth Visiting?", href: "/is-olden-worth-visiting" },
+  { label: "Plan your day", href: "/one-day-in-olden" },
+  { label: "Ship schedule", href: "/ship-schedule" },
+  { label: "Port guide", href: "/olden-port-guide" },
 ] as const;

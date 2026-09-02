@@ -53,7 +53,7 @@ export function ContentPage({
   breadcrumbs,
   belowHero,
   ctaTitle = "Plan your Olden shore excursion",
-  ctaText = "Browse cruise-friendly tours designed around your ship's time in port, with enough margin to return before all aboard.",
+  ctaText = "Compare village, glacier valley and Loen ideas against your hours ashore, then keep a clear walk back to the pier.",
   ctaHref = siteConfig.shoreExcursionsPath,
   ctaButtonLabel = "View Olden shore excursions",
   showShipReassurance = true,

@@ -153,12 +153,12 @@ export default function OldenPortGuidePage() {
         <h2>Return-to-ship buffer advice</h2>
         <ul>
           <li>Aim to be at the cruise pier 30 to 45 minutes before all aboard</li>
-          <li>Pre-book Briksdal and Loen Skylift tours on multi-ship days</li>
+          <li>Confirm Briksdal and Loen tickets independently if those are your plan</li>
           <li>Monitor your cruise app for timetable updates throughout the day</li>
           <li>
             Use the{" "}
-            <Link href="/#planner">Cruise Smart Planner</Link> to match
-            activities to your hours ashore
+            <Link href="/#planner">Olden port-day planner</Link> to think through
+            hours ashore
           </li>
           <li>
             Allow extra margin if your ship uses tender boats rather than the

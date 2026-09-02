@@ -82,7 +82,7 @@ export const loenSkyliftMountHovenExcursion: ExcursionData = {
     {
       question: "Can I combine Loen Skylift with Briksdal Glacier?",
       answer:
-        "Combining both requires a long port day of eight hours or more. The Cruise Smart Planner on the homepage helps assess whether your schedule allows both.",
+        "Hours ashore cannot prove both will fit. Confirm each outing separately. The port-day planner on the homepage is a thinking tool, not a timetable guarantee.",
     },
   ],
   breadcrumbs: [
@@ -96,8 +96,8 @@ export const loenSkyliftMountHovenExcursion: ExcursionData = {
     { label: "One day in Olden", href: "/one-day-in-olden" },
   ],
   bookingHref: "/excursions",
-  bookingLabel: "Book this excursion",
-  ctaTitle: "Ready to book Loen Skylift and Mount Hoven?",
+  bookingLabel: "Explore this excursion",
+  ctaTitle: "Read the Loen Skylift notes, then compare other Olden options",
   ctaText:
     "Ride to Mount Hoven for dramatic Nordfjord panoramas on a cruise-friendly shore excursion.",
 };

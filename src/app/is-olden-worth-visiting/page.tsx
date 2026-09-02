@@ -144,8 +144,8 @@ export default function IsOldenWorthVisitingPage() {
           Browse our{" "}
           <Link href="/excursions">shore excursions</Link>, read the{" "}
           <Link href="/olden-port-guide">port guide</Link>, and use the{" "}
-          <Link href="/#planner">Cruise Smart Planner</Link> to match activities
-          to your ship&apos;s timetable before you sail.
+          <Link href="/#planner">Olden port-day planner</Link> to think through
+          hours ashore before you arrive.
         </p>
       </section>
     </ContentPage>

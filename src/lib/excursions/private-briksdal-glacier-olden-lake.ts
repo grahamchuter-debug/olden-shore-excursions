@@ -82,7 +82,7 @@ export const privateBriksdalGlacierOldenLakeExcursion: ExcursionData = {
     {
       question: "Does the private tour include Loen Skylift?",
       answer:
-        "The standard private Briksdal itinerary focuses on glacier and valley scenery. Loen Skylift can sometimes be combined on full-day private bookings, confirm availability when booking.",
+        "The standard private Briksdal notes on this site cover glacier and valley scenery. Adding Loen is a separate question for the operator. This page does not invent a combined itinerary.",
     },
   ],
   breadcrumbs: [
@@ -96,8 +96,8 @@ export const privateBriksdalGlacierOldenLakeExcursion: ExcursionData = {
     { label: "Olden port guide", href: "/olden-port-guide" },
   ],
   bookingHref: "/excursions",
-  bookingLabel: "Book this excursion",
-  ctaTitle: "Ready to book your private Briksdal Glacier tour?",
+  bookingLabel: "Explore this excursion",
+  ctaTitle: "Read the private Briksdal notes, then compare other options",
   ctaText:
     "Enjoy flexible private sightseeing to Briksdal Glacier and Olden Lake with cruise-friendly timings.",
 };

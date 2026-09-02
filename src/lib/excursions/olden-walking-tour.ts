@@ -31,7 +31,6 @@ export const oldenWalkingTourExcursion: ExcursionData = {
     { src: siteImages.village, alt: imageAlts.village },
     { src: siteImages.harbour, alt: imageAlts.harbour },
     { src: siteImages.oldenLake, alt: imageAlts.oldenLake },
-    { src: siteImages.briksdalGlacier, alt: imageAlts.briksdalGlacier },
   ],
   highlights: [
     "Olden village streets and harbour area",
@@ -95,8 +94,8 @@ export const oldenWalkingTourExcursion: ExcursionData = {
     { label: "One day in Olden", href: "/one-day-in-olden" },
   ],
   bookingHref: "/excursions",
-  bookingLabel: "Book this excursion",
-  ctaTitle: "Ready to book your Olden walking tour?",
+  bookingLabel: "Explore this excursion",
+  ctaTitle: "Read the village walk notes, then compare other Olden options",
   ctaText:
     "Explore Olden village and harbour highlights on an easy cruise-friendly walking tour.",
 };

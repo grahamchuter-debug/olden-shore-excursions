@@ -57,7 +57,7 @@ export function TourCard({
           href={href}
           className="btn-primary-on-light w-fit transition-transform group-hover:scale-[1.02]"
         >
-          View Tour
+          View excursion
         </Link>
       </div>
     </article>

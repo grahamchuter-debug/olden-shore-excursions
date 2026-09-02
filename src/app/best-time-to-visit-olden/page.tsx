@@ -26,7 +26,7 @@ const faqs = [
   {
     question: "What is the best month for Olden cruise shore excursions?",
     answer:
-      "May through September offers the most reliable Briksdal Glacier access, Loen Skylift operation, and walkable weather for village tours. June and July are busiest, book excursions early.",
+      "May through September is when most Olden cruise calls published on this site arrive. Glacier and Skylift operation still need separate confirmation. June and July are the busiest published months here.",
   },
   {
     question: "Is Olden crowded in summer?",

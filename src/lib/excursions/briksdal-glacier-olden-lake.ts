@@ -96,8 +96,8 @@ export const briksdalGlacierOldenLakeExcursion: ExcursionData = {
     { label: "One day in Olden", href: "/one-day-in-olden" },
   ],
   bookingHref: "/excursions",
-  bookingLabel: "Book this excursion",
-  ctaTitle: "Ready to book your Briksdal Glacier and Olden Lake tour?",
+  bookingLabel: "Explore this excursion",
+  ctaTitle: "Read the Briksdal notes, then compare other Olden options",
   ctaText:
     "Experience Briksdal Glacier, Olden Lake valley scenery, and dramatic Nordfjord landscapes.",
 };

@@ -40,7 +40,7 @@ const faqs = [
   {
     question: "How do I choose between Olden shore excursions?",
     answer:
-      "Match the tour to your hours ashore: walking tours suit under-four-hour calls; Briksdal and scenic lakes tours suit 4 to 6 hours; Briksdal or Loen Skylift suit 6 to 8 hours; private glacier and full valley combinations need 8+ hours. Use the Cruise Smart Planner on the homepage.",
+      "Match the outing to your hours: the village walk suits a short call; Briksdal or the scenic lakes notes need more time; Loen is a different direction. Hours ashore cannot prove two valleys will combine. Use the port-day planner on the homepage as a thinking tool.",
   },
   {
     question: "Do all Olden excursions depart near the cruise port?",
@@ -64,9 +64,9 @@ export default function ExcursionsIndexPage() {
         relatedLinks={relatedLinks}
         faqs={faqs}
         ctaTitle="Need help choosing an Olden tour?"
-        ctaText="Use the Cruise Smart Planner on the homepage to match tours to your ship's timetable."
+        ctaText="Use the port-day planner on the homepage to think through hours, then keep a clear return buffer."
         ctaHref="/#planner"
-        ctaButtonLabel="Open Cruise Smart Planner"
+        ctaButtonLabel="Open the Olden port-day planner"
         belowHero={
           <section className="border-b bg-surface-muted">
             <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
@@ -96,8 +96,8 @@ export default function ExcursionsIndexPage() {
             full-day port calls.
           </p>
           <p>
-            For port-day planning tools and tier-based recommendations, use the{" "}
-            <Link href="/#planner">Cruise Smart Planner</Link> on the homepage.
+            For hours and return-buffer thinking, use the{" "}
+            <Link href="/#planner">Olden port-day planner</Link> on the homepage.
           </p>
         </section>
       </ContentPage>

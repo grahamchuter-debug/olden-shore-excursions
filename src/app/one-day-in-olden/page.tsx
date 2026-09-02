@@ -31,12 +31,12 @@ const faqs = [
   {
     question: "Can I visit Briksdal Glacier and Loen Skylift in one Olden day?",
     answer:
-      "Only if your ship stays at least eight hours. Both experiences need road transport and several hours each, combining them on shorter port calls risks missing all aboard.",
+      "Hours ashore cannot prove it. Each outing needs its own confirmed ticket and a generous buffer. Treat a second valley as a stretch, not a timetable result.",
   },
   {
     question: "Should I book Olden excursions before my cruise arrives?",
     answer:
-      "Pre-booking is strongly recommended on peak summer days. Popular Briksdal Glacier and Loen Skylift tours sell out when several ships share the port.",
+      "If you want a specific operator or timed ticket, arrange it through a genuine booking channel before you arrive. This site does not sell tickets or invent sold-out risk.",
   },
   {
     question: "How much buffer time should I leave before all aboard?",
@@ -112,25 +112,27 @@ export default function OneDayInOldenPage() {
       <section>
         <h2>8+ hour itinerary: glacier, skylift, or private touring</h2>
         <p>
-          Long port days open the full Olden experience. Options include the{" "}
+          A long call still does not prove two valleys will fit. Choose one main
+          direction, the{" "}
           <Link href="/excursions/briksdal-glacier-olden-lake">
             Briksdal Glacier tour
-          </Link>{" "}
-          combined with village time, the{" "}
+          </Link>
+          , the{" "}
           <Link href="/excursions/loen-skylift-mount-hoven">
             Loen Skylift and Mount Hoven
           </Link>{" "}
-          viewpoint excursion, or the{" "}
+          notes, or the{" "}
           <Link href="/excursions/private-briksdal-glacier-olden-lake">
-            Private Briksdal Glacier
+            private Briksdal
           </Link>{" "}
-          for flexible pacing.
+          option, then keep the last hour near the pier. Confirm Skylift and
+          glacier-path operation separately.
         </p>
         <ul>
-          <li>Morning: Briksdal Glacier or Loen Skylift excursion</li>
-          <li>Midday: Lunch in Olden village or at Hoven Restaurant</li>
-          <li>Afternoon: Second excursion or extended valley touring if schedule allows</li>
-          <li>Final hour free near the cruise pier for a calm return</li>
+          <li>Pick one main outing and confirm tickets independently</li>
+          <li>Keep lunch and village time as a buffer, not a second valley</li>
+          <li>A second outing only if both tickets are already confirmed</li>
+          <li>Final hour free near the cruise pier</li>
         </ul>
       </section>
 
@@ -139,8 +141,9 @@ export default function OneDayInOldenPage() {
         <p>
           Head back to the cruise pier at least 30 to 45 minutes before all aboard.
           Use the{" "}
-          <Link href="/#planner">Cruise Smart Planner</Link> to validate your
-          itinerary against your actual port window before you sail.
+          <Link href="/#planner">Olden port-day planner</Link> to think through
+          hours and return buffer. It does not prove glacier or Skylift
+          operation.
         </p>
       </section>
     </ContentPage>

@@ -26,7 +26,7 @@ export type CruisePortDayPlannerConfig = {
 
 export const oldenPortDayPlannerConfig: CruisePortDayPlannerConfig = {
   portName: "Olden",
-  heading: "Olden Cruise Smart Planner™",
+  heading: "Olden port-day planner",
   subtitle: "Plan your shore excursions around your actual time in port.",
   supportingCopy: "Built specifically for cruise passengers visiting Olden.",
   returnBufferNote:
@@ -111,9 +111,9 @@ export const oldenPortDayPlannerConfig: CruisePortDayPlannerConfig = {
       confidenceScore: 95,
       confidenceLabel: "Excellent Full Day",
       confidenceMessage:
-        "Ideal for private glacier touring, Loen Skylift, and full scenic valley combinations.",
+        "A long call still does not prove Briksdal and Loen will both fit. Confirm each outing separately and keep the last hour near the pier.",
       conversionNote:
-        "Most cruise passengers with 8+ hours in Olden combine the Private Briksdal Glacier tour with Loen Skylift or a full scenic valley day.",
+        "Treat a second valley as a stretch, not a default. Hours ashore cannot prove Skylift or glacier-path operation.",
       excursions: [
         {
           label: "Private Briksdal Glacier and Olden Lake Discovery",

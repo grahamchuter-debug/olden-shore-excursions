@@ -96,8 +96,8 @@ export const lakesGlaciersWaterfallsExcursion: ExcursionData = {
     { label: "Is Olden worth visiting?", href: "/is-olden-worth-visiting" },
   ],
   bookingHref: "/excursions",
-  bookingLabel: "Book this excursion",
-  ctaTitle: "Ready to book the scenic lakes and waterfalls tour?",
+  bookingLabel: "Explore this excursion",
+  ctaTitle: "Read the lakes and waterfalls notes, then compare other options",
   ctaText:
     "Discover glacial lakes, waterfalls, and dramatic valley scenery on a nature-focused Olden shore excursion.",
 };
