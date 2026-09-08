@@ -11,7 +11,7 @@
     {
       "binding": "DB",
       "database_name": "olden-bookings-prod",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "b40448d6-016f-4d52-adb3-64225d625671",
       "migrations_dir": "migrations"
     }
   ],
@@ -26,6 +26,6 @@
     "SITE_BASE_URL": "https://oldenshoreexcursions.com",
     "ORIGINATING_SITE": "oldenshoreexcursions.com",
     "ORIGINATING_PORT": "Olden, Norway",
-    "OPERATOR_PORTAL_BASE_URL": "https://olden-bookings-prod.workers.dev"
+    "OPERATOR_PORTAL_BASE_URL": "https://olden-bookings-prod.dark-violet-8d91.workers.dev"
   }
 }

@@ -25,7 +25,9 @@ import {
 } from "../../../shared/world-booking";
 import type { CreateBookingRequestInput } from "../../../shared/world-booking/types";
 import { corsHeaders, jsonResponse, withCors } from "./cors";
+import { emailSendingEnabled } from "./email";
 import { formatMajorMoneyForEmail } from "./logic";
+import { LIVE_PAYMENTS_CODE_ENABLED, bookingsAreEnabled } from "./live-gate";
 import { handleCreateCheckout } from "./routes/checkout";
 import { handleOperatorConfirm, handleOperatorDecline, handleOperatorReissueReview, handleOperatorUnresolved } from "./routes/operator";
 import { handleOperatorReviewAction, handleOperatorReviewPage } from "./routes/operator-review";
@@ -61,13 +63,27 @@ const worker = {
 
     if (url.pathname === "/health") {
       const mode = paymentsModeValue(env);
+      let dbOk = false;
+      try {
+        dbOk = Boolean(env.DB) && Boolean(await env.DB.prepare("SELECT 1 AS ok").first());
+      } catch {
+        dbOk = false;
+      }
       return withCors(
         jsonResponse({
           ok: true,
           service: "olden-bookings",
           mode,
+          dbBound: Boolean(env.DB),
+          dbOk,
+          bookingsEnabled: bookingsAreEnabled(env),
+          emailSendingEnabled: emailSendingEnabled(env),
+          livePaymentsCodeEnabled: LIVE_PAYMENTS_CODE_ENABLED,
+          liveUnlockPresent: Boolean((env as { LIVE_PAYMENTS_UNLOCK?: string }).LIVE_PAYMENTS_UNLOCK?.trim()),
           liveKeyPresent: isLiveStripeSecret(env.STRIPE_SECRET_KEY),
           liveKeyRejected: mode !== "live" && isLiveStripeSecret(env.STRIPE_SECRET_KEY),
+          webhookSecretPresent: Boolean(env.STRIPE_WEBHOOK_SECRET?.trim()),
+          resendKeyPresent: Boolean((env as { RESEND_API_KEY?: string }).RESEND_API_KEY?.trim()),
         }),
         env,
         request,
