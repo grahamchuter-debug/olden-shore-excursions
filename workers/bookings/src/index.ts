@@ -27,7 +27,7 @@ import type { CreateBookingRequestInput } from "../../../shared/world-booking/ty
 import { corsHeaders, jsonResponse, withCors } from "./cors";
 import { formatMajorMoneyForEmail } from "./logic";
 import { handleCreateCheckout } from "./routes/checkout";
-import { handleOperatorConfirm, handleOperatorDecline } from "./routes/operator";
+import { handleOperatorConfirm, handleOperatorDecline, handleOperatorReissueReview, handleOperatorUnresolved } from "./routes/operator";
 import { handleOperatorReviewAction, handleOperatorReviewPage } from "./routes/operator-review";
 import { handleGetCheckoutSession } from "./routes/session";
 import { handleStripeWebhook } from "./routes/webhook";
@@ -87,6 +87,10 @@ const worker = {
       response = await handleOperatorConfirm(request, env);
     } else if (url.pathname === "/api/bookings/operator/decline" && request.method === "POST") {
       response = await handleOperatorDecline(request, env);
+    } else if (url.pathname === "/api/bookings/operator/reissue-review" && request.method === "POST") {
+      response = await handleOperatorReissueReview(request, env);
+    } else if (url.pathname === "/api/bookings/operator/unresolved" && request.method === "GET") {
+      response = await handleOperatorUnresolved(request, env);
     } else if (url.pathname === "/operator/review" && request.method === "GET") {
       response = await handleOperatorReviewPage(request, env);
     } else if (url.pathname === "/operator/review/action" && request.method === "POST") {

@@ -57,8 +57,7 @@ export async function handleGetCheckoutSession(request: Request, env: Env): Prom
       guestCount: booking?.guest_count ?? null,
       amountTotal,
       currency,
-      customerName: booking?.customer_name ?? null,
-      customerEmail: booking?.customer_email ?? null,
+      // Do not expose customer contact PII on this unauthenticated lookup.
     });
   } catch (err) {
     if (err instanceof StripeModeError) {

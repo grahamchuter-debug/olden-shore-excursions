@@ -12,8 +12,15 @@ import { declineBooking } from "./operator-actions";
 import {
   createOperatorReviewToken,
   hashOperatorToken,
+  listUnresolvedRequestedBookings,
+  OPERATOR_TOKEN_TTL_MS,
+  OPS_RESPONSE_SLA_HOURS,
+  reissueOperatorReviewToken,
+  validateOperatorReviewToken,
+  type OperatorActionTokenRow,
   type OperatorAuditRow,
 } from "./operator-tokens";
+import { LIVE_PAYMENTS_CODE_ENABLED } from "./live-gate";
 import worker from "./index";
 import { setStripeFactoryForTests } from "./stripe";
 import type { EmailOutboxRow } from "./db";
@@ -23,7 +30,12 @@ afterEach(() => {
 });
 
 type RefundCall = {
-  params: { payment_intent?: string; amount?: number; reason?: string };
+  params: {
+    payment_intent?: string;
+    amount?: number;
+    reason?: string;
+    metadata?: Record<string, string>;
+  };
   opts?: { idempotencyKey?: string };
 };
 
@@ -189,6 +201,9 @@ test("refund A: successful full refund via tokenised operator path", async () =>
     assert.equal(calls.length, 1);
     assert.equal(calls[0]?.params.payment_intent, `pi_test_${reference}`);
     assert.equal(calls[0]?.params.amount, undefined);
+    assert.equal(calls[0]?.params.reason, undefined);
+    assert.notEqual(calls[0]?.params.reason, "requested_by_customer");
+    assert.equal(calls[0]?.params.metadata?.refund_cause, "unable_to_confirm");
     assert.equal(calls[0]?.opts?.idempotencyKey, `refund:${reference}`);
     assert.equal(await countEmailOutbox(env, reference, "customer_declined"), 1);
     const outbox = await listOutbox(env, reference);
@@ -522,4 +537,309 @@ test("fulfillPaidBooking sets requested/paid idempotently (not confirmed)", asyn
   assert.equal(second.status, "requested");
   assert.equal(second.payment_status, "paid");
   assert.notEqual(second.status, "confirmed");
+});
+
+test("operator decline refund omits customer-requested reason (unable_to_confirm metadata)", async () => {
+  const db = createMemoryD1();
+  const env = baseEnv(db);
+  const reference = "W2ODE-REFUND-REASON";
+  await insertBooking(env, paidBooking(reference));
+  const calls = installStripeMock({});
+  const restoreFetch = installResendMock("success");
+  try {
+    const result = await declineBooking(env, reference, { source: "header" });
+    assert.equal(result.ok, true);
+    assert.equal(calls[0]?.params.reason, undefined);
+    assert.doesNotMatch(JSON.stringify(calls[0]?.params ?? {}), /requested_by_customer/);
+    assert.equal(calls[0]?.params.metadata?.refund_cause, "unable_to_confirm");
+  } finally {
+    restoreFetch();
+  }
+});
+
+test("reissue review token invalidates prior token and audits", async () => {
+  const db = createMemoryD1();
+  const env = baseEnv(db, { OPERATOR_PORTAL_BASE_URL: "https://olden-bookings-test.example" });
+  const reference = "W2ODE-REISSUE-A";
+  await insertBooking(env, paidBooking(reference));
+  const first = await createOperatorReviewToken(env, reference);
+  const reissued = await reissueOperatorReviewToken(env, reference);
+  assert.equal(reissued.ok, true);
+  if (!reissued.ok) return;
+  assert.equal(reissued.invalidatedPrior, 1);
+  assert.ok(reissued.reviewUrl?.includes(reference));
+  const oldValidation = await validateOperatorReviewToken(env, reference, first);
+  assert.equal(oldValidation.ok, false);
+  const newValidation = await validateOperatorReviewToken(env, reference, reissued.token);
+  assert.equal(newValidation.ok, true);
+  const audit = await listAudit(env, reference);
+  assert.ok(audit.some((row) => row.action_type === "reissue" && row.result === "token_reissued"));
+});
+
+test("reissue is rejected for confirmed bookings", async () => {
+  const db = createMemoryD1();
+  const env = baseEnv(db);
+  const reference = "W2ODE-REISSUE-B";
+  await insertBooking(env, paidBooking(reference, { status: "confirmed" }));
+  const result = await reissueOperatorReviewToken(env, reference);
+  assert.equal(result.ok, false);
+  if (result.ok) return;
+  assert.equal(result.code, "NOT_ACTIONABLE");
+});
+
+test("unresolved list surfaces aged paid/requested bookings only", async () => {
+  const db = createMemoryD1();
+  const env = baseEnv(db);
+  const now = Date.now();
+  const oldCreated = new Date(now - (OPS_RESPONSE_SLA_HOURS + 2) * 60 * 60 * 1000).toISOString();
+  const freshCreated = new Date(now - 60 * 60 * 1000).toISOString();
+  await insertBooking(
+    env,
+    paidBooking("W2ODE-STALE-1", { created_at: oldCreated, updated_at: oldCreated }),
+  );
+  await insertBooking(
+    env,
+    paidBooking("W2ODE-STALE-2", {
+      status: "confirmed",
+      created_at: oldCreated,
+      updated_at: oldCreated,
+    }),
+  );
+  await insertBooking(
+    env,
+    paidBooking("W2ODE-FRESH-1", { created_at: freshCreated, updated_at: freshCreated }),
+  );
+  const rows = await listUnresolvedRequestedBookings(env, OPS_RESPONSE_SLA_HOURS, now);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]?.booking_reference, "W2ODE-STALE-1");
+});
+
+test("authenticated reissue endpoint returns review URL", async () => {
+  const db = createMemoryD1();
+  const env = baseEnv(db, { OPERATOR_PORTAL_BASE_URL: "https://olden-bookings-test.example" });
+  const reference = "W2ODE-REISSUE-HTTP";
+  await insertBooking(env, paidBooking(reference));
+  const response = await worker.fetch(
+    new Request("http://bookings.test/api/bookings/operator/reissue-review", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "X-Olden-Operator-Token": "operator-header-secret",
+      },
+      body: JSON.stringify({ reference }),
+    }),
+    env,
+  );
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as { ok: boolean; reviewUrl?: string };
+  assert.equal(body.ok, true);
+  assert.match(body.reviewUrl ?? "", /operator\/review/);
+});
+
+function liveRecoveryEnv(db: D1Database, overrides: Record<string, unknown> = {}): Env {
+  return baseEnv(db, {
+    PAYMENTS_MODE: "live",
+    STRIPE_SECRET_KEY: "sk_live_recovery_mock",
+    OPERATOR_TOKEN: "operator-live-secret",
+    OPERATOR_TEST_TOKEN: "operator-test-secret-must-not-work-in-live",
+    OPERATOR_PORTAL_BASE_URL: "https://olden-bookings-prod.example",
+    ...overrides,
+  });
+}
+
+test("O-8B live unresolved + valid operator auth allowed without LIVE_PAYMENTS_CODE_ENABLED", async () => {
+  assert.equal(LIVE_PAYMENTS_CODE_ENABLED, false);
+  const db = createMemoryD1();
+  const env = liveRecoveryEnv(db);
+  const now = Date.now();
+  const oldCreated = new Date(now - 30 * 60 * 60 * 1000).toISOString();
+  await insertBooking(
+    env,
+    paidBooking("W2ODE-LIVE-UNRES-1", { created_at: oldCreated, updated_at: oldCreated }),
+  );
+  const res = await worker.fetch(
+    new Request("http://bookings.test/api/bookings/operator/unresolved?olderThanHours=24", {
+      headers: { "X-Olden-Operator-Token": "operator-live-secret" },
+    }),
+    env,
+  );
+  assert.equal(res.status, 200);
+  const body = (await res.json()) as { ok: boolean; count: number; bookings: Array<{ booking_reference: string }> };
+  assert.equal(body.ok, true);
+  assert.equal(body.count, 1);
+  assert.equal(body.bookings[0]?.booking_reference, "W2ODE-LIVE-UNRES-1");
+});
+
+test("O-8B live unresolved without auth rejected", async () => {
+  const db = createMemoryD1();
+  const env = liveRecoveryEnv(db);
+  const res = await worker.fetch(
+    new Request("http://bookings.test/api/bookings/operator/unresolved"),
+    env,
+  );
+  assert.equal(res.status, 403);
+  const body = (await res.json()) as { code?: string };
+  assert.equal(body.code, "OPERATOR_FORBIDDEN");
+});
+
+test("O-8B live unresolved rejects OPERATOR_TEST_TOKEN", async () => {
+  const db = createMemoryD1();
+  const env = liveRecoveryEnv(db);
+  const res = await worker.fetch(
+    new Request("http://bookings.test/api/bookings/operator/unresolved", {
+      headers: { "X-Olden-Operator-Token": "operator-test-secret-must-not-work-in-live" },
+    }),
+    env,
+  );
+  assert.equal(res.status, 403);
+});
+
+test("O-8B live reissue + valid auth allowed for eligible booking", async () => {
+  const db = createMemoryD1();
+  const env = liveRecoveryEnv(db);
+  const reference = "W2ODE-LIVE-REISSUE-1";
+  await insertBooking(env, paidBooking(reference));
+  const prior = await createOperatorReviewToken(env, reference);
+  const before = Date.now();
+  const res = await worker.fetch(
+    new Request("http://bookings.test/api/bookings/operator/reissue-review", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "X-Olden-Operator-Token": "operator-live-secret",
+      },
+      body: JSON.stringify({ reference }),
+    }),
+    env,
+  );
+  assert.equal(res.status, 200);
+  const body = (await res.json()) as {
+    ok: boolean;
+    token?: string;
+    invalidatedPrior?: number;
+    reviewUrl?: string;
+  };
+  assert.equal(body.ok, true);
+  assert.equal(body.invalidatedPrior, 1);
+  assert.ok(body.token);
+  assert.match(body.reviewUrl ?? "", /operator\/review/);
+
+  const oldCheck = await validateOperatorReviewToken(env, reference, prior);
+  assert.equal(oldCheck.ok, false);
+
+  const newCheck = await validateOperatorReviewToken(env, reference, body.token!);
+  assert.equal(newCheck.ok, true);
+
+  const tokenRow = await env.DB.prepare(`SELECT * FROM operator_action_tokens WHERE token_hash = ? LIMIT 1`)
+    .bind(await hashOperatorToken(body.token!))
+    .first<OperatorActionTokenRow>();
+  assert.ok(tokenRow);
+  const ttlMs = Date.parse(tokenRow!.expires_at) - before;
+  assert.ok(ttlMs > OPERATOR_TOKEN_TTL_MS - 5_000);
+  assert.ok(ttlMs < OPERATOR_TOKEN_TTL_MS + 5_000);
+
+  const booking = await getBookingByReference(env, reference);
+  assert.equal(booking?.status, "requested");
+  assert.equal(booking?.payment_status, "paid");
+  assert.equal(booking?.stripe_refund_id, null);
+
+  const audit = await listAudit(env, reference);
+  assert.ok(audit.some((row) => row.action_type === "reissue" && row.result === "token_reissued"));
+});
+
+test("O-8B live reissue without auth rejected", async () => {
+  const db = createMemoryD1();
+  const env = liveRecoveryEnv(db);
+  const reference = "W2ODE-LIVE-REISSUE-2";
+  await insertBooking(env, paidBooking(reference));
+  const res = await worker.fetch(
+    new Request("http://bookings.test/api/bookings/operator/reissue-review", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ reference }),
+    }),
+    env,
+  );
+  assert.equal(res.status, 403);
+  const booking = await getBookingByReference(env, reference);
+  assert.equal(booking?.status, "requested");
+  assert.equal(booking?.payment_status, "paid");
+});
+
+test("O-8B customer/session credentials cannot call operator recovery", async () => {
+  const db = createMemoryD1();
+  const env = liveRecoveryEnv(db);
+  const reference = "W2ODE-LIVE-REISSUE-3";
+  await insertBooking(
+    env,
+    paidBooking(reference, {
+      stripe_checkout_session_id: "cs_live_customer_probe",
+    }),
+  );
+
+  const unresolved = await worker.fetch(
+    new Request(
+      `http://bookings.test/api/bookings/operator/unresolved?ref=${encodeURIComponent(reference)}&session_id=cs_live_customer_probe`,
+    ),
+    env,
+  );
+  assert.equal(unresolved.status, 403);
+
+  const reissue = await worker.fetch(
+    new Request("http://bookings.test/api/bookings/operator/reissue-review", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        reference,
+        session_id: "cs_live_customer_probe",
+        bookingSessionId: "sess-customer",
+      }),
+    }),
+    env,
+  );
+  assert.equal(reissue.status, 403);
+
+  const session = await worker.fetch(
+    new Request(
+      `http://bookings.test/api/bookings/session?ref=${encodeURIComponent(reference)}&session_id=cs_live_customer_probe`,
+    ),
+    env,
+  );
+  // Session may 502 without Stripe mock — either way it must not unlock operator routes.
+  assert.notEqual(session.status, 403);
+  assert.ok(session.status === 200 || session.status === 502 || session.status === 503);
+});
+
+test("O-8B live header confirm/decline remain forbidden (separate from recovery)", async () => {
+  const db = createMemoryD1();
+  const env = liveRecoveryEnv(db);
+  const reference = "W2ODE-LIVE-MUTATE-1";
+  await insertBooking(env, paidBooking(reference));
+  const confirm = await worker.fetch(
+    new Request("http://bookings.test/api/bookings/operator/confirm", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "X-Olden-Operator-Token": "operator-live-secret",
+      },
+      body: JSON.stringify({ reference }),
+    }),
+    env,
+  );
+  assert.equal(confirm.status, 403);
+  const decline = await worker.fetch(
+    new Request("http://bookings.test/api/bookings/operator/decline", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "X-Olden-Operator-Token": "operator-live-secret",
+      },
+      body: JSON.stringify({ reference }),
+    }),
+    env,
+  );
+  assert.equal(decline.status, 403);
+  const booking = await getBookingByReference(env, reference);
+  assert.equal(booking?.status, "requested");
+  assert.equal(booking?.payment_status, "paid");
 });

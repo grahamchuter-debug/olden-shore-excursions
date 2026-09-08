@@ -96,6 +96,29 @@ export function createMemoryD1(): D1Database {
       return null;
     }
 
+    if (sql.includes("FROM bookings WHERE status = 'requested'") && sql.includes("payment_status = 'paid'")) {
+      const cutoff = String(v[0]);
+      return allBookings()
+        .filter(
+          (item) =>
+            item.status === "requested" &&
+            item.payment_status === "paid" &&
+            item.created_at <= cutoff,
+        )
+        .sort((a, b) => a.created_at.localeCompare(b.created_at))
+        .map((item) =>
+          clone({
+            booking_reference: item.booking_reference,
+            product_id: item.product_id,
+            cruise_date: item.cruise_date,
+            customer_email: item.customer_email,
+            amount_total_cents: item.amount_total_cents,
+            currency: item.currency,
+            created_at: item.created_at,
+          }),
+        );
+    }
+
     if (sql.includes("FROM bookings WHERE idempotency_key")) {
       const found = allBookings().find((item) => item.idempotency_key === v[0]);
       return found ? clone(found) : null;
@@ -285,6 +308,17 @@ export function createMemoryD1(): D1Database {
 
     if (sql.startsWith("UPDATE operator_action_tokens") && sql.includes("consumed_at")) {
       const now = String(v[0]);
+      if (sql.includes("booking_reference = ?") && sql.includes("consumed_at IS NULL")) {
+        const ref = String(v[1]);
+        let changes = 0;
+        for (const row of operatorTokens.values()) {
+          if (row.booking_reference === ref && !row.consumed_at) {
+            row.consumed_at = now;
+            changes += 1;
+          }
+        }
+        return { changes };
+      }
       const id = String(v[1]);
       const row = operatorTokens.get(id);
       if (row && !row.consumed_at) {

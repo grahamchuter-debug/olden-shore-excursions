@@ -5,13 +5,20 @@
  * Gate values:
  * - PRODUCTION_READY_LOCKED — journey visible; checkout disabled (default for
  *   production `npm run build` / `npm run deploy`)
- * - BOOKING_ENABLED — checkout allowed in the UI (TEST Worker only for O-5)
+ * - BOOKING_ENABLED — checkout allowed in the UI only when an explicit UI mode
+ *   AND a matching API target are both valid
  *
  * TEST unlock (explicit, build-time):
  *   NEXT_PUBLIC_OLDEN_BOOKING_UI=test
+ *   → always targets the isolated TEST Worker URL
  *
- * Production deploys must NOT set that env. Without it, status stays locked and
- * accidental production site deploys cannot open Stripe TEST checkout.
+ * Future production unlock (explicit; not used by normal build/deploy):
+ *   NEXT_PUBLIC_OLDEN_BOOKING_UI=live
+ *   NEXT_PUBLIC_OLDEN_BOOKINGS_API_URL=<production Worker origin>
+ *   → fails closed if the production URL is missing or points at TEST
+ *
+ * Production deploys must NOT set those envs. Without them, status stays locked
+ * and getOldenBookingsApiUrl() returns null (never the TEST Worker).
  */
 
 import { OLDEN_CANCELLATION_COPY } from "../../../shared/destinations/olden-products";
@@ -28,34 +35,78 @@ export const OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT =
 export const OLDEN_TEST_BOOKINGS_API_URL =
   "https://olden-bookings-test.dark-violet-8d91.workers.dev";
 
+export type OldenBookingsApiTarget =
+  | { mode: "test"; url: string }
+  | { mode: "production"; url: string }
+  | { mode: "locked"; url: null; reason: string };
+
+type EnvLike = Record<string, string | undefined>;
+
+function readEnv(env: EnvLike | undefined): EnvLike {
+  return env ?? (typeof process !== "undefined" ? (process.env as EnvLike) : {});
+}
+
+function isTestWorkerUrl(url: string): boolean {
+  const normalized = url.trim().replace(/\/$/, "");
+  return (
+    normalized === OLDEN_TEST_BOOKINGS_API_URL || /olden-bookings-test/i.test(normalized)
+  );
+}
+
+/**
+ * Explicit API target selection. Never falls back from production/live to TEST.
+ */
+export function resolveOldenBookingsApiTarget(env?: EnvLike): OldenBookingsApiTarget {
+  const e = readEnv(env);
+  const uiMode = (e.NEXT_PUBLIC_OLDEN_BOOKING_UI ?? "").trim();
+  const prodUrl = (e.NEXT_PUBLIC_OLDEN_BOOKINGS_API_URL ?? "").trim().replace(/\/$/, "");
+
+  if (uiMode === "test") {
+    return { mode: "test", url: OLDEN_TEST_BOOKINGS_API_URL };
+  }
+
+  if (uiMode === "live") {
+    if (!prodUrl) {
+      return { mode: "locked", url: null, reason: "missing_prod_api_url" };
+    }
+    if (isTestWorkerUrl(prodUrl)) {
+      return { mode: "locked", url: null, reason: "test_url_not_allowed_for_live" };
+    }
+    return { mode: "production", url: prodUrl };
+  }
+
+  return { mode: "locked", url: null, reason: "production_ready_locked" };
+}
+
 /**
  * True only when the frontend was built/started with the explicit TEST UI flag.
  * Never infer from hostname alone.
  */
-export function isOldenBookingTestUiEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_OLDEN_BOOKING_UI === "test";
+export function isOldenBookingTestUiEnabled(env?: EnvLike): boolean {
+  return (readEnv(env).NEXT_PUBLIC_OLDEN_BOOKING_UI ?? "").trim() === "test";
 }
 
 /** Resolved public status for this build. */
-export function resolveOldenPublicBookingStatus(): OldenPublicBookingStatus {
-  return isOldenBookingTestUiEnabled()
-    ? "BOOKING_ENABLED"
-    : OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT;
+export function resolveOldenPublicBookingStatus(env?: EnvLike): OldenPublicBookingStatus {
+  const target = resolveOldenBookingsApiTarget(env);
+  return target.mode === "locked" ? OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT : "BOOKING_ENABLED";
 }
 
 /**
- * Booking API base URL. O-5 only ever targets the TEST Worker.
- * There is no production booking Worker to point at.
+ * Booking API base URL for checkout.
+ * - TEST UI → TEST Worker
+ * - live UI + explicit prod URL → production Worker
+ * - otherwise → null (fail closed; never TEST fallback)
  */
-export function getOldenBookingsApiUrl(): string {
-  return OLDEN_TEST_BOOKINGS_API_URL;
+export function getOldenBookingsApiUrl(env?: EnvLike): string | null {
+  return resolveOldenBookingsApiTarget(env).url;
 }
 
 /** @deprecated Prefer resolveOldenPublicBookingStatus() — kept for call-site clarity. */
 export const OLDEN_PUBLIC_BOOKING_STATUS = OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT;
 
 export const oldenCommercialConfig = {
-  get bookingsApiUrl() {
+  get bookingsApiUrl(): string | null {
     return getOldenBookingsApiUrl();
   },
   email: "hello@oldenshoreexcursions.com",

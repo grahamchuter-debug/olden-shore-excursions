@@ -1,3 +1,5 @@
+import { getBookingByReference } from "./db";
+
 export type OperatorActionTokenRow = {
   id: string;
   booking_reference: string;
@@ -21,6 +23,23 @@ export type OperatorAuditRow = {
 type TokenEnv = { DB: D1Database };
 
 export const OPERATOR_TOKEN_TTL_MS = 72 * 60 * 60 * 1000;
+
+/** Ops should action paid/requested bookings within this window. */
+export const OPS_RESPONSE_SLA_HOURS = 24;
+
+/** Escalate / reissue review link if still unresolved after this window. */
+export const OPS_ESCALATION_HOURS = 48;
+
+export type StaleRequestedBooking = {
+  booking_reference: string;
+  product_id: string;
+  cruise_date: string;
+  customer_email: string;
+  amount_total_cents: number;
+  currency: string;
+  created_at: string;
+  age_hours: number;
+};
 
 function bytesToHex(bytes: Uint8Array): string {
   return [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -96,7 +115,7 @@ export async function recordOperatorAudit(
   env: TokenEnv,
   args: {
     bookingReference: string;
-    actionType: "confirm" | "decline";
+    actionType: "confirm" | "decline" | "reissue";
     result: string;
     source: "header" | "token";
     tokenId?: string | null;
@@ -124,4 +143,106 @@ export function operatorPortalBaseUrl(env: { OPERATOR_PORTAL_BASE_URL?: string; 
   const explicit = env.OPERATOR_PORTAL_BASE_URL?.trim();
   if (explicit) return explicit.replace(/\/$/, "");
   return null;
+}
+
+/**
+ * Invalidate unused review tokens for a booking (e.g. before reissue).
+ * Consumed tokens are left untouched for audit history.
+ */
+export async function invalidateUnconsumedOperatorTokens(
+  env: TokenEnv,
+  bookingReference: string,
+): Promise<number> {
+  const now = new Date().toISOString();
+  const result = await env.DB.prepare(
+    `UPDATE operator_action_tokens
+     SET consumed_at = ?
+     WHERE booking_reference = ? AND consumed_at IS NULL`,
+  )
+    .bind(now, bookingReference.trim())
+    .run();
+  return Number(result.meta?.changes ?? 0);
+}
+
+/**
+ * Reissue a fresh operator review token for a paid/requested booking.
+ * Does not auto-confirm or auto-refund. Preserves audit trail.
+ */
+export async function reissueOperatorReviewToken(
+  env: TokenEnv & { OPERATOR_PORTAL_BASE_URL?: string; SITE_BASE_URL?: string },
+  bookingReference: string,
+): Promise<
+  | { ok: true; reference: string; token: string; reviewUrl: string | null; invalidatedPrior: number }
+  | { ok: false; code: string; message: string }
+> {
+  const booking = await getBookingByReference(env, bookingReference);
+  if (!booking) {
+    return { ok: false, code: "NOT_FOUND", message: "Booking not found." };
+  }
+  if (booking.payment_status !== "paid" || booking.status !== "requested") {
+    return {
+      ok: false,
+      code: "NOT_ACTIONABLE",
+      message: "Only paid, unconfirmed (requested) bookings can receive a reissued review link.",
+    };
+  }
+
+  const invalidatedPrior = await invalidateUnconsumedOperatorTokens(env, booking.booking_reference);
+  const token = await createOperatorReviewToken(env, booking.booking_reference);
+  const portalBase = operatorPortalBaseUrl(env);
+  const reviewUrl = portalBase
+    ? buildOperatorReviewUrl(portalBase, booking.booking_reference, token)
+    : null;
+
+  await recordOperatorAudit(env, {
+    bookingReference: booking.booking_reference,
+    actionType: "reissue",
+    result: "token_reissued",
+    source: "header",
+    detail: `invalidated_prior=${invalidatedPrior}`,
+  });
+
+  return {
+    ok: true,
+    reference: booking.booking_reference,
+    token,
+    reviewUrl,
+    invalidatedPrior,
+  };
+}
+
+/**
+ * List paid/requested bookings older than the given threshold (ops chase list).
+ * No auto-confirm / auto-refund — surfacing only.
+ */
+export async function listUnresolvedRequestedBookings(
+  env: TokenEnv,
+  olderThanHours: number,
+  nowMs: number = Date.now(),
+): Promise<StaleRequestedBooking[]> {
+  const cutoff = new Date(nowMs - Math.max(0, olderThanHours) * 60 * 60 * 1000).toISOString();
+  const rows =
+    (
+      await env.DB.prepare(
+        `SELECT booking_reference, product_id, cruise_date, customer_email, amount_total_cents, currency, created_at
+         FROM bookings
+         WHERE status = 'requested' AND payment_status = 'paid' AND created_at <= ?
+         ORDER BY created_at ASC`,
+      )
+        .bind(cutoff)
+        .all<{
+          booking_reference: string;
+          product_id: string;
+          cruise_date: string;
+          customer_email: string;
+          amount_total_cents: number;
+          currency: string;
+          created_at: string;
+        }>()
+    ).results ?? [];
+
+  return rows.map((row) => ({
+    ...row,
+    age_hours: Math.max(0, Math.round((nowMs - Date.parse(row.created_at)) / (60 * 60 * 1000))),
+  }));
 }

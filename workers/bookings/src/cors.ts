@@ -11,13 +11,17 @@ export function corsHeaders(env: { CORS_ALLOWED_ORIGINS?: string }, request: Req
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
-  const allow = allowed.includes(origin) ? origin : allowed[0] || "*";
-  return {
-    "access-control-allow-origin": allow,
+  // Fail closed: never echo an allowlist origin for a mismatched/missing Origin.
+  const headers: Record<string, string> = {
     "access-control-allow-headers": "content-type,idempotency-key,x-olden-operator-token",
     "access-control-allow-methods": "POST,GET,OPTIONS",
     "access-control-allow-private-network": "true",
   };
+  if (origin && allowed.includes(origin)) {
+    headers["access-control-allow-origin"] = origin;
+    headers.vary = "Origin";
+  }
+  return headers;
 }
 
 export function withCors(response: Response, env: { CORS_ALLOWED_ORIGINS?: string }, request: Request): Response {

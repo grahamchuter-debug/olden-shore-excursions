@@ -325,12 +325,15 @@ test("frontend commercial-config defaults to PRODUCTION_READY_LOCKED without TES
     "utf8",
   );
   assert.match(src, /OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT\s*=\s*"PRODUCTION_READY_LOCKED"/);
-  assert.match(src, /NEXT_PUBLIC_OLDEN_BOOKING_UI\s*===\s*"test"/);
+  assert.match(src, /NEXT_PUBLIC_OLDEN_BOOKING_UI/);
+  assert.match(src, /===\s*"test"/);
   assert.match(
     src,
     /OLDEN_TEST_BOOKINGS_API_URL\s*=\s*"https:\/\/olden-bookings-test\.dark-violet-8d91\.workers\.dev"/,
   );
-  assert.doesNotMatch(src, /olden-bookings-prod/);
+  assert.match(src, /test_url_not_allowed_for_live/);
+  assert.match(src, /missing_prod_api_url/);
+  assert.match(src, /resolveOldenBookingsApiTarget/);
   assert.doesNotMatch(src, /sk_(test|live)_/);
   assert.doesNotMatch(src, /whsec_/);
 });

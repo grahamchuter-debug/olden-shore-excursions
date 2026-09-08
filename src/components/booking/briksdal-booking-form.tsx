@@ -240,6 +240,13 @@ export function BriksdalBookingForm() {
       .filter(Boolean)
       .join("\n\n");
 
+    if (!apiUrl) {
+      setError(
+        `Online checkout is locked for this build. Email ${oldenCommercialConfig.email} for help.`,
+      );
+      return;
+    }
+
     setBusy(true);
     try {
       const response = await fetch(`${apiUrl}/api/bookings/checkout`, {

@@ -267,14 +267,18 @@ export async function declineBooking(
 
   try {
     const stripe = createStripe(env);
+    // Stripe only allows reason: duplicate | fraudulent | requested_by_customer.
+    // None of those means "supplier unable to confirm", so omit reason and record
+    // the operational cause in metadata (never label ops decline as customer-requested).
     const refund = await stripe.refunds.create(
       {
         payment_intent: paymentIntentId,
-        reason: "requested_by_customer",
         metadata: {
           booking_ref: booking.booking_reference,
           product_id: booking.product_id,
           destination: booking.destination_id,
+          refund_cause: "unable_to_confirm",
+          operator_action: "decline",
         },
       },
       { idempotencyKey: `refund:${booking.booking_reference}` },
