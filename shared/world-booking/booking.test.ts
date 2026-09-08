@@ -13,8 +13,11 @@ import { oldenBookingCore } from "../destinations/olden";
 import {
   assertClientTotalMatches,
   calculateBookingQuote,
+  confirmedCustomerEmail,
   createBookingReference,
+  declinedCustomerEmail,
   destinationBrandFromCore,
+  renderCustomerBookingEmailText,
   requestedCustomerEmail,
   statusAfterPaymentSuccess,
   supplierRequestEmail,
@@ -160,11 +163,18 @@ test("ops request email includes product and contact", () => {
     guests: { adults: 2, children: 0, infants: 0 },
     customer: { name: "Alex Traveller", email: "alex@example.com", phone: "+447700900123" },
     amountLabel: "EUR €192",
-    operationalNotes: "Walking suitability acknowledged",
+    operationalNotes: "Walking suitability acknowledged: yes",
     destinationLabel: "Olden Shore Excursions — new booking request",
+    stripeCheckoutSessionId: "cs_test_example",
+    stripePaymentIntentId: "pi_test_example",
   });
   assert.match(email.subject, /W2ODE-TESTREF1/);
   assert.match(email.shell.destinationLabel, /Olden/i);
+  assert.match(email.body, /DIRECT_SUPPLIER_MANUAL/);
+  assert.match(email.body, /Walking suitability acknowledged/);
+  assert.match(email.body, /cs_test_example/);
+  assert.doesNotMatch(email.body, /SEG affiliate|white-label route|send the customer to SEG/i);
+  assert.doesNotMatch(email.body, /Belize|W2BZE/i);
 });
 
 test("request mode live catalogue for Briksdal", () => {
@@ -182,3 +192,152 @@ test("child seat notes helper formats structured operational text", () => {
   assert.match(notes, /age 4y/);
   assert.match(notes, /weight 18 kg/);
 });
+
+test("requested email avoids brand-name greeting and remains not confirmed", () => {
+  const email = requestedCustomerEmail({
+    reference: "W2ODE-O6PREV1",
+    product: briksdal!,
+    cruise: {
+      date: "2027-07-15",
+      shipName: "Sky Princess",
+      shipSlug: "not-listed",
+      cruiseLine: "",
+      isCustomShip: true,
+      scheduleMatched: false,
+    },
+    guests: { adults: 1, children: 1, infants: 0 },
+    amountLabel: "EUR €152",
+    customerName: "Olden Frontend Test",
+    brand,
+  });
+  const body = email.bodyLines.join("\n");
+  assert.doesNotMatch(body, /Thanks Olden/i);
+  assert.match(body, /not confirmed/i);
+  assert.match(email.shell.statusLabel, /Awaiting confirmation/i);
+  assert.doesNotMatch(email.shell.statusLabel, /^Confirmed$/i);
+  assert.match(body, /W2ODE-O6PREV1/);
+  assert.match(body, /EUR €152|€152/);
+  assert.doesNotMatch(body, /Belize|W2BZE|SEG/i);
+  assert.equal(email.shell.eyebrow, "Olden Shore Excursions");
+});
+
+test("confirmed email uses confirmed language only for confirmed template", () => {
+  const email = confirmedCustomerEmail({
+    reference: "W2ODE-O6CONF1",
+    product: briksdal!,
+    cruise: {
+      date: "2027-07-15",
+      shipName: "Sky Princess",
+      shipSlug: "not-listed",
+      cruiseLine: "",
+      isCustomShip: true,
+      scheduleMatched: false,
+    },
+    guests: { adults: 1, children: 0, infants: 0 },
+    amountLabel: "EUR €96",
+    customerName: "Alex Traveller",
+    meetingInstructions: OLDEN_CANCELLATION_COPY.meetingInstructions,
+    brand,
+  });
+  assert.match(email.subject, /confirmed/i);
+  assert.equal(email.shell.statusTone, "confirmed");
+  assert.match(email.shell.statusLabel, /^Confirmed$/i);
+  assert.match(email.bodyLines.join("\n"), /places are confirmed/i);
+  assert.match(email.bodyLines.join("\n"), /Meeting instructions/i);
+  assert.doesNotMatch(email.bodyLines.join("\n"), /Belize|SEG|voucher|e-ticket/i);
+});
+
+test("unable-to-confirm email apologises and refunds without customer-cancel blame", () => {
+  const email = declinedCustomerEmail({
+    reference: "W2ODE-O6DECL1",
+    product: briksdal!,
+    cruise: {
+      date: "2027-07-15",
+      shipName: "Sky Princess",
+      shipSlug: "not-listed",
+      cruiseLine: "",
+      isCustomShip: true,
+      scheduleMatched: false,
+    },
+    guests: { adults: 1, children: 0, infants: 0 },
+    amountLabel: "EUR €96",
+    customerName: "Alex Traveller",
+    refundState: "refund_pending",
+    brand,
+  });
+  const body = email.bodyLines.join("\n");
+  assert.match(email.subject, /request/i);
+  assert.doesNotMatch(email.subject, /confirmed/i);
+  assert.match(body, /could not confirm|couldn't confirm/i);
+  assert.match(body, /full refund|refunded|initiated a full refund/i);
+  assert.doesNotMatch(body, /you cancelled|your cancellation|SEG|Belize/i);
+  const text = renderCustomerBookingEmailText(email.shell);
+  assert.match(text, /^Need help\?$/m);
+  assert.doesNotMatch(text, /Need help with your request\?/i);
+  assert.match(text, /hello@oldenshoreexcursions\.com/);
+  assert.doesNotMatch(text, /info@wowatour\.com|adult_cost|Norway Excursions/i);
+});
+
+test("Olden ops_request routes to info@wowatour.com; customer Reply-To identity stays hello@", () => {
+  assert.equal(briksdal!.supplier.notificationEmail, "info@wowatour.com");
+  assert.equal(oldenBookingCore.bookingEmail, "hello@oldenshoreexcursions.com");
+
+  const cruise = {
+    date: "2027-07-15",
+    shipName: "Sky Princess",
+    shipSlug: "not-listed",
+    cruiseLine: "",
+    isCustomShip: true,
+    scheduleMatched: false,
+  } as const;
+  const guests = { adults: 1, children: 0, infants: 0 };
+
+  for (const email of [
+    requestedCustomerEmail({
+      reference: "W2ODE-O6B-RT",
+      product: briksdal!,
+      cruise,
+      guests,
+      amountLabel: "EUR €96",
+      customerName: "Alex Traveller",
+      brand,
+    }),
+    confirmedCustomerEmail({
+      reference: "W2ODE-O6B-RT",
+      product: briksdal!,
+      cruise,
+      guests,
+      amountLabel: "EUR €96",
+      customerName: "Alex Traveller",
+      brand,
+    }),
+    declinedCustomerEmail({
+      reference: "W2ODE-O6B-RT",
+      product: briksdal!,
+      cruise,
+      guests,
+      amountLabel: "EUR €96",
+      customerName: "Alex Traveller",
+      refundState: "refunded",
+      brand,
+    }),
+  ]) {
+    const rendered = renderCustomerBookingEmailText(email.shell);
+    assert.match(rendered, /hello@oldenshoreexcursions\.com/);
+    assert.doesNotMatch(rendered, /info@wowatour\.com/);
+    assert.doesNotMatch(rendered, /adult_cost|child_cost|Norway Excursions|fulfilment_mode/i);
+  }
+
+  const ops = supplierRequestEmail({
+    reference: "W2ODE-O6B-RT",
+    product: briksdal!,
+    cruise,
+    guests,
+    customer: { name: "Alex Traveller", email: "alex@example.com", phone: "+447700900123" },
+    amountLabel: "EUR €96",
+    destinationLabel: "Olden Shore Excursions — new booking request",
+  });
+  assert.match(ops.body, /DIRECT_SUPPLIER_MANUAL/);
+  assert.doesNotMatch(ops.body, /SEG affiliate/i);
+});
+

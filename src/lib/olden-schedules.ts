@@ -133,6 +133,14 @@ export function getOldenEntriesForMonthKey(monthKey: string): OldenScheduleEntry
     .sort((a, b) => a.date.localeCompare(b.date) || a.ship.localeCompare(b.ship));
 }
 
+/** Ships calling Olden on a single ISO date (YYYY-MM-DD). */
+export function getOldenEntriesForDate(isoDate: string): OldenScheduleEntry[] {
+  return payload.rows
+    .filter((row) => row.arrival_date === isoDate)
+    .map(toEntry)
+    .sort((a, b) => a.ship.localeCompare(b.ship));
+}
+
 export function getOldenMonthKeysWithCalls(): string[] {
   return [...new Set(payload.rows.map((row) => row.arrival_date.slice(0, 7)))].sort();
 }

@@ -1,5 +1,8 @@
 import { oldenBookingCore } from "../../../shared/destinations/olden";
-import { findOldenBookingProduct } from "../../../shared/destinations/olden-products";
+import {
+  findOldenBookingProduct,
+  OLDEN_CANCELLATION_COPY,
+} from "../../../shared/destinations/olden-products";
 import {
   confirmedCustomerEmail,
   declinedCustomerEmail,
@@ -119,6 +122,8 @@ export async function enqueuePostPaymentNotifications(env: NotifyEnv, booking: B
       operationalNotes: booking.operational_notes ?? undefined,
       reviewUrl,
       destinationLabel: "Olden Shore Excursions — new booking request",
+      stripeCheckoutSessionId: booking.stripe_checkout_session_id,
+      stripePaymentIntentId: booking.stripe_payment_intent_id,
     });
     const insertedOps = await enqueueEmailOutbox(env, {
       bookingReference: booking.booking_reference,
@@ -161,6 +166,7 @@ export async function enqueueConfirmationEmail(env: NotifyEnv, booking: BookingR
       guests: guestsFromBooking(booking),
       amountLabel: formatMajorMoneyForEmail(Math.round(booking.amount_total_cents / 100), booking.currency),
       customerName: booking.customer_name,
+      meetingInstructions: OLDEN_CANCELLATION_COPY.meetingInstructions,
       brand: destinationBrand,
     });
     await enqueueEmailOutbox(env, {

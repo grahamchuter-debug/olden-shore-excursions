@@ -1,33 +1,73 @@
 /**
- * Public commercial config for Olden Shore Excursions (Phase O-2).
+ * Public commercial config for Olden Shore Excursions.
  * INTERNAL supplier costs / fulfilment notes must never be rendered here.
  *
  * Gate values:
- * - PRODUCTION_READY_LOCKED — journey visible; live pay disabled
- * - BOOKING_ENABLED — live checkout allowed (also requires Worker unlock)
+ * - PRODUCTION_READY_LOCKED — journey visible; checkout disabled (default for
+ *   production `npm run build` / `npm run deploy`)
+ * - BOOKING_ENABLED — checkout allowed in the UI (TEST Worker only for O-5)
+ *
+ * TEST unlock (explicit, build-time):
+ *   NEXT_PUBLIC_OLDEN_BOOKING_UI=test
+ *
+ * Production deploys must NOT set that env. Without it, status stays locked and
+ * accidental production site deploys cannot open Stripe TEST checkout.
  */
-export const OLDEN_PUBLIC_BOOKING_STATUS = "PRODUCTION_READY_LOCKED" as const;
+
+import { OLDEN_CANCELLATION_COPY } from "../../../shared/destinations/olden-products";
 
 export type OldenPublicBookingStatus =
   | "PRODUCTION_READY_LOCKED"
   | "BOOKING_ENABLED";
 
+/** Hard default — production static builds bake this in when env is unset. */
+export const OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT =
+  "PRODUCTION_READY_LOCKED" as const satisfies OldenPublicBookingStatus;
+
+/** Isolated Cloudflare TEST booking Worker (O-3 / O-4 proven). */
+export const OLDEN_TEST_BOOKINGS_API_URL =
+  "https://olden-bookings-test.dark-violet-8d91.workers.dev";
+
+/**
+ * True only when the frontend was built/started with the explicit TEST UI flag.
+ * Never infer from hostname alone.
+ */
+export function isOldenBookingTestUiEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_OLDEN_BOOKING_UI === "test";
+}
+
+/** Resolved public status for this build. */
+export function resolveOldenPublicBookingStatus(): OldenPublicBookingStatus {
+  return isOldenBookingTestUiEnabled()
+    ? "BOOKING_ENABLED"
+    : OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT;
+}
+
+/**
+ * Booking API base URL. O-5 only ever targets the TEST Worker.
+ * There is no production booking Worker to point at.
+ */
+export function getOldenBookingsApiUrl(): string {
+  return OLDEN_TEST_BOOKINGS_API_URL;
+}
+
+/** @deprecated Prefer resolveOldenPublicBookingStatus() — kept for call-site clarity. */
+export const OLDEN_PUBLIC_BOOKING_STATUS = OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT;
+
 export const oldenCommercialConfig = {
-  /** Test Worker URL — replace after deploy; prod stays locked in O-2. */
-  bookingsApiUrl: "https://olden-bookings-test.workers.dev",
+  get bookingsApiUrl() {
+    return getOldenBookingsApiUrl();
+  },
   email: "hello@oldenshoreexcursions.com",
   siteName: "Olden Shore Excursions",
-  defaultPublicBookingStatus: OLDEN_PUBLIC_BOOKING_STATUS,
-  cancellation:
-    "Free cancellation up to 48 hours before departure. Cancellations made within 48 hours of departure are non-refundable. If we are unable to confirm your excursion, you will receive a full refund. If your cruise ship does not call at Olden, you will receive a full refund.",
-  paymentNotConfirmation:
-    "After payment, we arrange your excursion with the local operator and email confirmation separately. Payment does not mean the excursion is confirmed yet.",
-  unableToConfirm:
-    "If we are unable to confirm your excursion after payment, you will receive a full refund to your original payment method.",
-  meetingInstructions:
-    "Meeting instructions will be provided with your confirmed excursion details.",
-  overTenGuidance:
-    "Travelling with more than 10 guests? Contact us and we'll check availability for your group.",
+  get defaultPublicBookingStatus(): OldenPublicBookingStatus {
+    return resolveOldenPublicBookingStatus();
+  },
+  cancellation: OLDEN_CANCELLATION_COPY.customerCancellation,
+  paymentNotConfirmation: OLDEN_CANCELLATION_COPY.paymentNotConfirmation,
+  unableToConfirm: OLDEN_CANCELLATION_COPY.unableToConfirm,
+  meetingInstructions: OLDEN_CANCELLATION_COPY.meetingInstructions,
+  overTenGuidance: OLDEN_CANCELLATION_COPY.overTenGuidance,
   products: {
     "briksdal-glacier-olden-lake": {
       productId: "briksdal-glacier-olden-lake",
@@ -42,14 +82,16 @@ export const oldenCommercialConfig = {
       durationLabel: "4 hours",
       maxGuests: 10,
       requiresWalkingAck: true,
-      publicBookingStatus: OLDEN_PUBLIC_BOOKING_STATUS,
+      get publicBookingStatus(): OldenPublicBookingStatus {
+        return resolveOldenPublicBookingStatus();
+      },
       displayPrice: "Adult 12+ €96 · Child 3–11 €56 · Infant 0–2 FREE",
     },
   },
 } as const;
 
 export function isPublicBookingEnabled(
-  status: OldenPublicBookingStatus = oldenCommercialConfig.defaultPublicBookingStatus,
+  status: OldenPublicBookingStatus = resolveOldenPublicBookingStatus(),
 ): boolean {
   return status === "BOOKING_ENABLED";
 }

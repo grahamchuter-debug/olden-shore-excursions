@@ -25,8 +25,8 @@ export function BookingReferenceBanner() {
 
   return (
     <p>
-      Your booking reference will appear in your confirmation emails. If you have
-      questions, contact{" "}
+      Keep your booking reference from the payment confirmation screen. If you
+      have questions, contact{" "}
       <a className="content-link" href={`mailto:${siteConfig.contactEmail}`}>
         {siteConfig.contactEmail}
       </a>

@@ -138,6 +138,7 @@ test("Belize ops email routing stays Wow A Tour / Belize branded", () => {
   assert.match(email.shell.destinationLabel, /Belize/i);
   assert.equal(cave!.supplier.notificationEmail, "info@wowatour.com");
   assert.doesNotMatch(email.body, /hello@oldenshoreexcursions\.com|Briksdal|W2ODE/i);
+  assert.match(email.body, /SEG affiliate|white-label/i);
 });
 
 test("Belize finder cannot resolve Olden product IDs", () => {

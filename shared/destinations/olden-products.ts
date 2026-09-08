@@ -2,13 +2,14 @@ import { oldenBookingCore } from "./olden";
 import type { AgeBand, BookableProductConfig, ProductCapacity, ProductPricing } from "../world-booking/types";
 
 /**
- * Operational routing: Olden Shore Excursions ops mailbox for Graham’s manual fulfilment.
+ * Operational routing: Wow A Tour ops mailbox for Graham’s manual fulfilment.
+ * Customer Reply-To stays hello@oldenshoreexcursions.com (EMAIL_REPLY_TO / bookingEmail).
  * Public customers never see SEG, Norway Excursions costs, or margins.
  */
 const OPERATIONS = {
   id: "olden-shore-ops",
   displayName: "Olden Shore Excursions Operations",
-  notificationEmail: "hello@oldenshoreexcursions.com",
+  notificationEmail: "info@wowatour.com",
   routingStatus: "production_ready" as const,
 };
 

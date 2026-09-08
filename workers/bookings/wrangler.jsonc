@@ -28,7 +28,7 @@
     "EMAIL_FROM_NAME": "Olden Shore Excursions",
     "EMAIL_REPLY_TO": "hello@oldenshoreexcursions.com",
     "CORS_ALLOWED_ORIGINS": "http://localhost:3000,http://127.0.0.1:3000,https://oldenshoreexcursions.com,https://www.oldenshoreexcursions.com",
-    "SITE_BASE_URL": "https://oldenshoreexcursions.com",
+    "SITE_BASE_URL": "http://localhost:3000",
     "ORIGINATING_SITE": "oldenshoreexcursions.com",
     "ORIGINATING_PORT": "Olden, Norway",
     "OPERATOR_PORTAL_BASE_URL": "https://olden-bookings-test.dark-violet-8d91.workers.dev"

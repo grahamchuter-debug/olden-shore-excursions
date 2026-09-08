@@ -63,6 +63,33 @@ function destinationBrandFromCore(core: Pick<DestinationBookingCore, "siteName" 
 
 export { destinationBrandFromCore };
 
+/**
+ * Avoid awkward greetings when the lead name starts with the brand word
+ * (e.g. "Olden Test Guest" → not "Thanks Olden").
+ */
+export function customerGreetingFirstName(
+  fullName: string | undefined,
+  brandSiteName: string,
+): string {
+  const first = firstNameFromFullName(fullName ?? "");
+  if (first === "there") return "there";
+  const brandLead = brandSiteName.trim().split(/\s+/)[0]?.toLowerCase();
+  if (brandLead && first.toLowerCase() === brandLead) return "there";
+  return first;
+}
+
+function thanksReceivedLine(fullName: string | undefined, brandSiteName: string): string {
+  const first = customerGreetingFirstName(fullName, brandSiteName);
+  if (first === "there") return "Thanks — we've received your request and payment.";
+  return `Thanks ${first}. We've received your request and payment.`;
+}
+
+function confirmedIntroLine(fullName: string | undefined, brandSiteName: string): string {
+  const first = customerGreetingFirstName(fullName, brandSiteName);
+  if (first === "there") return "Great news — your places are confirmed.";
+  return `Great news, ${first} — your places are confirmed.`;
+}
+
 function baseSummaryRows(input: {
   reference: string;
   productName: string;
@@ -83,6 +110,45 @@ function baseSummaryRows(input: {
   return rows;
 }
 
+function productFulfilmentMode(
+  product: BookableProductConfig,
+): "DIRECT_SUPPLIER_MANUAL" | "SEG_MANUAL" | "UNKNOWN" {
+  const notes = (product.supplierReferenceNotes ?? []).join(" ");
+  if (/DIRECT_SUPPLIER_MANUAL/i.test(notes)) return "DIRECT_SUPPLIER_MANUAL";
+  if (/SEG_MANUAL|SEG_FULFILMENT|SEG affiliate/i.test(notes)) return "SEG_MANUAL";
+  return "UNKNOWN";
+}
+
+function opsActionSteps(
+  mode: ReturnType<typeof productFulfilmentMode>,
+  override?: string[],
+): string[] {
+  if (override?.length) return override;
+  if (mode === "DIRECT_SUPPLIER_MANUAL") {
+    return [
+      "Place the corresponding booking manually with the direct supplier using the INTERNAL supply reference (do not share supplier portals or costs with the customer).",
+      "When supplier confirmation is obtained, confirm this booking in the operator portal (payment alone is not confirmation).",
+      "If unavailable, decline and refund the customer in full to the original payment method.",
+    ];
+  }
+  return [
+    "Place the corresponding booking manually via the established SEG affiliate / white-label route using the INTERNAL supply reference (do not send the customer to SEG).",
+    "When SEG/supplier confirmation is obtained, confirm this booking (payment alone is not confirmation).",
+    "If unavailable, decline and refund the customer in full to the original payment method.",
+  ];
+}
+
+function opsInternalSupplyNotes(product: BookableProductConfig): string {
+  return (product.supplierReferenceNotes ?? [])
+    .filter(
+      (note) =>
+        /INTERNAL|SEG|shoreexcursionsgroup|CASLJUNSOUVAN|CASLSAIL|fulfilment_mode=|supplier=|supplier_product_url=|adult_cost|child_cost/i.test(
+          note,
+        ) && !/^INTERNAL ONLY — never publish|^NEVER expose/i.test(note),
+    )
+    .join(" | ");
+}
+
 export function requestedCustomerEmail(input: {
   reference: string;
   product: BookableProductConfig;
@@ -92,17 +158,16 @@ export function requestedCustomerEmail(input: {
   customerName?: string;
   brand: CustomerEmailShellInput["brand"];
 }): RequestReceiptContent {
-  const firstName = firstNameFromFullName(input.customerName ?? "");
   const guestsLabel = guestCountLabel(input.product, input.guests);
   const shell: CustomerEmailShellInput = {
     brand: customerBrand(input.brand),
-    preheader: "Payment received — we're arranging your excursion.",
+    preheader: "Payment received — excursion request awaiting confirmation.",
     eyebrow: input.brand.siteName,
     headline: "We've received your excursion request",
     statusLabel: "Payment received · Awaiting confirmation",
     statusTone: "awaiting",
     introParagraphs: [
-      `Thanks ${firstName}. We've received your request and payment.`,
+      thanksReceivedLine(input.customerName, input.brand.siteName),
       "We're now arranging your excursion. We'll email you again as soon as it is confirmed.",
     ],
     summaryRows: baseSummaryRows({
@@ -115,7 +180,7 @@ export function requestedCustomerEmail(input: {
     infoPanel: {
       title: "Your booking status",
       paragraphs: [
-        "This excursion is not confirmed just yet.",
+        "This excursion is not confirmed yet.",
         "Your payment has been received and we're arranging your excursion. If we cannot confirm your places, your payment will be refunded in full to your original payment method.",
       ],
     },
@@ -149,9 +214,15 @@ export function supplierRequestEmail(input: {
   reviewUrl?: string;
   /** Ops-only destination label — never shown to customers. */
   destinationLabel?: string;
+  /** Optional ops-only Stripe identifiers. */
+  stripeCheckoutSessionId?: string | null;
+  stripePaymentIntentId?: string | null;
+  /** Override fulfilment action steps (ops-only). */
+  actionSteps?: string[];
 }): OperationalRequestEmail {
   const guestsLabel = guestCountLabel(input.product, input.guests);
   const guestLines = guestCommunicationLines(input.product, input.guests);
+  const fulfilmentMode = productFulfilmentMode(input.product);
   const summaryRows: BookingSummaryRow[] = [
     { label: "Reference", value: input.reference },
     { label: "Excursion", value: input.product.name },
@@ -180,12 +251,18 @@ export function supplierRequestEmail(input: {
     summaryRows.push({ label: "Customer notes", value: input.operationalNotes.trim() });
   }
 
-  const internalSupply = (input.product.supplierReferenceNotes ?? [])
-    .filter((note) => /INTERNAL SUPPLY|SEG|shoreexcursionsgroup|CASLJUNSOUVAN|CASLSAIL/i.test(note))
-    .join(" | ");
+  if (input.stripeCheckoutSessionId?.trim()) {
+    summaryRows.push({ label: "Stripe Checkout session", value: input.stripeCheckoutSessionId.trim() });
+  }
+  if (input.stripePaymentIntentId?.trim()) {
+    summaryRows.push({ label: "Stripe PaymentIntent", value: input.stripePaymentIntentId.trim() });
+  }
+
+  const internalSupply = opsInternalSupplyNotes(input.product);
   if (internalSupply) {
     summaryRows.push({ label: "INTERNAL supply reference", value: internalSupply });
   }
+  summaryRows.push({ label: "Fulfilment mode", value: fulfilmentMode });
 
   const destinationLabel =
     input.destinationLabel?.trim() ||
@@ -196,11 +273,7 @@ export function supplierRequestEmail(input: {
     headline: "New booking request",
     statusLabel: "PAYMENT RECEIVED · BOOKING NOT YET CONFIRMED",
     summaryRows,
-    actionSteps: [
-      "Place the corresponding booking manually via the established SEG affiliate / white-label route using the INTERNAL supply reference (do not send the customer to SEG).",
-      "When SEG/supplier confirmation is obtained, confirm this booking (payment alone is not confirmation).",
-      "If unavailable, decline and refund the customer in full to the original payment method.",
-    ],
+    actionSteps: opsActionSteps(fulfilmentMode, input.actionSteps),
     reviewUrl: input.reviewUrl,
   };
 
@@ -234,11 +307,10 @@ export function confirmedCustomerEmail(input: {
   meetingInstructions?: string | null;
   brand: CustomerEmailShellInput["brand"];
 }): RequestReceiptContent {
-  const firstName = firstNameFromFullName(input.customerName ?? "");
   const guestsLabel = guestCountLabel(input.product, input.guests);
   const meetingCopy = input.meetingInstructions?.trim()
     ? input.meetingInstructions.trim()
-    : "We'll send your meeting and joining information separately before your excursion.";
+    : "Meeting instructions will be provided with your confirmed excursion details.";
 
   const shell: CustomerEmailShellInput = {
     brand: customerBrand(input.brand),
@@ -247,7 +319,7 @@ export function confirmedCustomerEmail(input: {
     headline: "Your excursion is confirmed",
     statusLabel: "Confirmed",
     statusTone: "confirmed",
-    introParagraphs: [`Great news, ${firstName} — your places are confirmed.`],
+    introParagraphs: [confirmedIntroLine(input.customerName, input.brand.siteName)],
     summaryRows: baseSummaryRows({
       reference: input.reference,
       productName: input.product.name,
@@ -315,6 +387,7 @@ export function declinedCustomerEmail(input: {
       "We're sorry we couldn't make this one work.",
       `If you'd like help finding an alternative, reply to this email or contact us at ${input.brand.bookingEmail}.`,
     ],
+    helpHeading: "Need help?",
   };
 
   return {

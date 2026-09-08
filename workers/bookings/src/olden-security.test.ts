@@ -317,3 +317,44 @@ test("service name is olden-bookings", () => {
   const src = readFileSync(join(here, "index.ts"), "utf8");
   assert.match(src, /service:\s*["']olden-bookings["']/);
 });
+
+test("frontend commercial-config defaults to PRODUCTION_READY_LOCKED without TEST UI env", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(
+    join(here, "../../../src/lib/booking/commercial-config.ts"),
+    "utf8",
+  );
+  assert.match(src, /OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT\s*=\s*"PRODUCTION_READY_LOCKED"/);
+  assert.match(src, /NEXT_PUBLIC_OLDEN_BOOKING_UI\s*===\s*"test"/);
+  assert.match(
+    src,
+    /OLDEN_TEST_BOOKINGS_API_URL\s*=\s*"https:\/\/olden-bookings-test\.dark-violet-8d91\.workers\.dev"/,
+  );
+  assert.doesNotMatch(src, /olden-bookings-prod/);
+  assert.doesNotMatch(src, /sk_(test|live)_/);
+  assert.doesNotMatch(src, /whsec_/);
+});
+
+test("package deploy/build scripts do not enable TEST booking UI", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const pkg = JSON.parse(readFileSync(join(here, "../../../package.json"), "utf8")) as {
+    scripts: Record<string, string>;
+  };
+  assert.equal(pkg.scripts.build.includes("OLDEN_BOOKING_UI"), false);
+  assert.equal(pkg.scripts.deploy.includes("OLDEN_BOOKING_UI"), false);
+  assert.match(pkg.scripts["dev:booking-test"] || "", /NEXT_PUBLIC_OLDEN_BOOKING_UI=test/);
+  assert.match(pkg.scripts["build:booking-test"] || "", /NEXT_PUBLIC_OLDEN_BOOKING_UI=test/);
+});
+
+test("TEST Worker SITE_BASE_URL is local-safe; prod wrangler keeps public domain", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const testCfg = readFileSync(join(here, "../wrangler.jsonc"), "utf8");
+  const prodCfg = readFileSync(join(here, "../wrangler.prod.jsonc"), "utf8");
+  assert.match(testCfg, /"SITE_BASE_URL":\s*"http:\/\/localhost:3000"/);
+  assert.match(testCfg, /"EMAIL_SENDING_ENABLED":\s*"false"/);
+  assert.match(testCfg, /"EMAIL_REPLY_TO":\s*"hello@oldenshoreexcursions\.com"/);
+  assert.match(prodCfg, /"SITE_BASE_URL":\s*"https:\/\/oldenshoreexcursions\.com"/);
+  assert.match(prodCfg, /"EMAIL_SENDING_ENABLED":\s*"false"/);
+  assert.match(prodCfg, /"EMAIL_REPLY_TO":\s*"hello@oldenshoreexcursions\.com"/);
+  assert.doesNotMatch(prodCfg, /localhost:3000/);
+});

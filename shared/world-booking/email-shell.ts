@@ -23,6 +23,8 @@ export type CustomerEmailShellInput = {
   infoPanel?: { title: string; paragraphs: string[] };
   closingParagraphs?: string[];
   footerTagline?: string;
+  /** Customer help footer heading. Default keeps request-journey wording. */
+  helpHeading?: string;
 };
 
 export type OpsEmailShellInput = {
@@ -171,7 +173,7 @@ export function renderCustomerBookingEmailHtml(input: CustomerEmailShellInput): 
         : ""
     }
     <tr><td style="padding:8px 28px 28px;border-top:1px solid ${BRAND.border};">
-      <p style="margin:0 0 8px;font-size:15px;line-height:1.55;color:${BRAND.text};"><strong>Need help with your request?</strong></p>
+      <p style="margin:0 0 8px;font-size:15px;line-height:1.55;color:${BRAND.text};"><strong>${escapeHtml(input.helpHeading ?? "Need help with your request?")}</strong></p>
       <p style="margin:0 0 14px;font-size:15px;line-height:1.55;color:${BRAND.muted};">Reply to this email and include your booking reference, or contact us at <a href="mailto:${escapeHtml(helpEmail)}" style="color:${BRAND.navyMid};text-decoration:underline;">${escapeHtml(helpEmail)}</a>.</p>
       <p style="margin:0;font-size:13px;line-height:1.5;color:${BRAND.muted};">${escapeHtml(input.brand.siteName)}<br>${escapeHtml(input.footerTagline ?? "Cruise-first shore excursions")}<br><a href="${escapeHtml(helpUrl)}" style="color:${BRAND.navyMid};text-decoration:none;">${escapeHtml(helpUrl.replace(/^https?:\/\//, ""))}</a></p>
     </td></tr>`;
@@ -196,7 +198,7 @@ export function renderCustomerBookingEmailText(input: CustomerEmailShellInput): 
     lines.push(...input.closingParagraphs, "");
   }
   lines.push(
-    "Need help with your request?",
+    input.helpHeading ?? "Need help with your request?",
     `Reply to this email and include your booking reference, or contact ${input.brand.bookingEmail}.`,
     "",
     input.brand.siteName,

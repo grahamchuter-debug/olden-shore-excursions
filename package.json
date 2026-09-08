@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:booking-test": "NEXT_PUBLIC_OLDEN_BOOKING_UI=test next dev",
     "build": "next build",
+    "build:booking-test": "NEXT_PUBLIC_OLDEN_BOOKING_UI=test next build",
     "start": "next start",
     "lint": "eslint",
     "sync:schedules": "node scripts/sync-olden-schedules.mjs",

@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { BriksdalBookingForm } from "@/components/booking/briksdal-booking-form";
 import { ContentPage } from "@/components/content-page";
+import { isOldenBookingTestUiEnabled } from "@/lib/booking/commercial-config";
 import { imageAlts, siteImages } from "@/lib/site-images";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
 };
 
 export default function BriksdalBookPage() {
+  const testUi = isOldenBookingTestUiEnabled();
+
   return (
     <ContentPage
       title="Request Briksdal Glacier & Olden Lake"
@@ -46,6 +49,12 @@ export default function BriksdalBookPage() {
       ]}
     >
       <section className="space-y-4">
+        {testUi ? (
+          <p className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
+            <strong>TEST booking journey.</strong> Checkout uses the isolated TEST
+            Worker only. Normal production builds stay locked.
+          </p>
+        ) : null}
         <p>
           Before you continue, please read the walking requirements on the{" "}
           <Link
