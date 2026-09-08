@@ -53,7 +53,7 @@ const homeFaqs = [
   {
     question: "Can I book shore excursions on this site?",
     answer:
-      "This site is for planning and discovery. There is no live booking checkout here. Use the excursion pages and guides to understand options, then arrange tours through operators or your usual booking channel.",
+      "Selected Olden excursions can be requested online when checkout is unlocked. Payment takes your request — confirmation follows separately once we arrange the excursion with the local operator. Until then, email hello@oldenshoreexcursions.com.",
   },
 ] as const;
 

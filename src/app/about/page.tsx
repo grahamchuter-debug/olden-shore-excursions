@@ -52,7 +52,10 @@ export default function AboutPage() {
         <ul>
           <li>Not a cruise line, coach operator or port authority</li>
           <li>Not an official tourism board</li>
-          <li>Not a live booking checkout</li>
+          <li>
+            Not an instant-confirm booking engine — online requests are confirmed
+            separately after we arrange the excursion
+          </li>
           <li>Not a guarantee of berth, timings or ticket availability</li>
         </ul>
       </section>

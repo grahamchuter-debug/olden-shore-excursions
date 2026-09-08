@@ -1,36 +1,31 @@
+/** Local product imagery under /public/images (Wikimedia Commons licences). */
+const briksdal = "/images/briksdal";
+
 export const siteImages = {
-  hero:
-    "https://upload.wikimedia.org/wikipedia/commons/c/ca/Briksdalsbreen_Glacier_-Norway.jpg",
-  briksdalGlacier:
-    "https://upload.wikimedia.org/wikipedia/commons/c/ca/Briksdalsbreen_Glacier_-Norway.jpg",
-  briksdalWaterfall:
-    "https://upload.wikimedia.org/wikipedia/commons/c/c7/Briksdal_Glacier_Norway_%28213014897%29.jpeg",
-  oldenLake:
-    "https://upload.wikimedia.org/wikipedia/commons/f/ff/Oldedalen.jpg",
-  oldedalen:
-    "https://upload.wikimedia.org/wikipedia/commons/f/ff/Oldedalen.jpg",
+  hero: `${briksdal}/briksdalsbreen-glacier-yair-haklai.jpg`,
+  briksdalGlacier: `${briksdal}/briksdalsbreen-glacier-yair-haklai.jpg`,
+  briksdalWaterfall: `${briksdal}/briksdal-waterfall-lake-simo87vr.jpg`,
+  oldenLake: `${briksdal}/oldevatnet-northern-simo-rasanen.jpg`,
+  oldedalen: `${briksdal}/oldedalen-valley-sindre.jpg`,
+  littleRedChurch: `${briksdal}/olden-old-church-wolfmann.jpg`,
+  kleivafossen: `${briksdal}/kleivafossen-briksdalen-simo-rasanen.jpg`,
+  briksdalTrail: `${briksdal}/briksdal-trail-bridge-leif.jpg`,
   loenSkylift:
     "https://upload.wikimedia.org/wikipedia/commons/4/40/Seilbahn_Hoven_Loen.jpg",
   mountHoven:
     "https://upload.wikimedia.org/wikipedia/commons/a/a8/Hoven_Loen.jpg",
   village:
     "https://upload.wikimedia.org/wikipedia/commons/c/cc/Olden_Norway.jpg",
-  harbour:
-    "https://upload.wikimedia.org/wikipedia/commons/2/28/Olden_-_Norway_-_panoramio.jpg",
-  portGuide:
-    "https://upload.wikimedia.org/wikipedia/commons/2/28/Olden_-_Norway_-_panoramio.jpg",
-  worthVisiting:
-    "https://upload.wikimedia.org/wikipedia/commons/c/c7/Briksdal_Glacier_Norway_%28213014897%29.jpeg",
-  briksdalTour:
-    "https://upload.wikimedia.org/wikipedia/commons/c/ca/Briksdalsbreen_Glacier_-Norway.jpg",
-  privateBriksdalTour:
-    "https://upload.wikimedia.org/wikipedia/commons/c/c7/Briksdal_Glacier_Norway_%28213014897%29.jpeg",
+  harbour: `${briksdal}/olden-harbour-kris-van-achter.jpg`,
+  portGuide: `${briksdal}/olden-harbour-kris-van-achter.jpg`,
+  worthVisiting: `${briksdal}/briksdal-waterfall-lake-simo87vr.jpg`,
+  briksdalTour: `${briksdal}/briksdalsbreen-glacier-yair-haklai.jpg`,
+  privateBriksdalTour: `${briksdal}/briksdal-waterfall-lake-simo87vr.jpg`,
   loenSkyliftTour:
     "https://upload.wikimedia.org/wikipedia/commons/a/a8/Hoven_Loen.jpg",
   walkingTour:
     "https://upload.wikimedia.org/wikipedia/commons/c/cc/Olden_Norway.jpg",
-  lakesGlaciersTour:
-    "https://upload.wikimedia.org/wikipedia/commons/f/ff/Oldedalen.jpg",
+  lakesGlaciersTour: `${briksdal}/oldedalen-valley-sindre.jpg`,
   flamPortCard:
     "https://upload.wikimedia.org/wikipedia/commons/5/56/Fl%C3%A5m_fr%C3%A5_cruiseskip_ved_kai.jpg",
   bergenPortCard:
@@ -50,9 +45,15 @@ export const imageAlts = {
   briksdalWaterfall:
     "Waterfall and turquoise glacial lake at Briksdal Glacier with mountain reflections near Olden",
   oldenLake:
-    "Oldedalen valley with glacial lake and steep green mountains above Olden, Norway",
+    "Northern shore of Oldevatnet (Olden Lake) in Oldedalen near Olden, Norway",
   oldedalen:
-    "Scenic Oldedalen glacier valley with waterfalls and pine forests south of Olden village",
+    "Scenic Oldedalen glacier valley with lakes and steep green mountains south of Olden village",
+  littleRedChurch:
+    "Olden Old Church, the historic red wooden church on the Briksdal valley route",
+  kleivafossen:
+    "Kleivafossen waterfall in Briksdalen on the walking approach toward Briksdal Glacier",
+  briksdalTrail:
+    "Footbridge on the walking trail near Briksdal Glacier, showing the outdoor walking section of the excursion",
   loenSkylift:
     "Loen Skylift cable car ascending toward Mount Hoven above Nordfjord near Olden",
   mountHoven:

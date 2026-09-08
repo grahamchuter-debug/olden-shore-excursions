@@ -132,22 +132,80 @@ function walk(dir, out = []) {
 
 const srcFiles = walk(path.join(root, "src"));
 const banned = [/BOOK NOW/i, /Book a Tour/, /Book this excursion/];
+const paymentAllow =
+  /(^|\/)(app\/book\/|components\/booking\/|lib\/booking\/)/;
 let bannedHits = 0;
 for (const file of srcFiles) {
+  const rel = path.relative(root, file);
   const text = readFileSync(file, "utf8");
   for (const pattern of banned) {
     if (pattern.test(text)) {
       bannedHits += 1;
-      fail(`banned CTA pattern ${pattern} in ${path.relative(root, file)}`);
+      fail(`banned CTA pattern ${pattern} in ${rel}`);
     }
   }
-  if (/stripe|checkout\.session|payment.?intent/i.test(text)) {
+  if (/stripe|checkout\.session|payment.?intent/i.test(text) && !paymentAllow.test(rel.replace(/\\/g, "/"))) {
     bannedHits += 1;
-    fail(`payment infrastructure ref in ${path.relative(root, file)}`);
+    fail(`payment infrastructure ref in ${rel}`);
   }
 }
 if (bannedHits === 0) {
-  pass("no BOOK NOW / Book a Tour / Book this excursion / payment infra in src");
+  pass("no banned CTAs; payment infra confined to booking paths or absent");
+}
+
+const liveGate = readFileSync(
+  path.join(root, "workers/bookings/src/live-gate.ts"),
+  "utf8",
+);
+if (!/LIVE_PAYMENTS_CODE_ENABLED\s*=\s*false/.test(liveGate)) {
+  fail("LIVE_PAYMENTS_CODE_ENABLED must be false for O-2");
+} else {
+  pass("LIVE_PAYMENTS_CODE_ENABLED is false");
+}
+
+const prodWrangler = readFileSync(
+  path.join(root, "workers/bookings/wrangler.prod.jsonc"),
+  "utf8",
+);
+if (!/BOOKINGS_ENABLED":\s*"false"/.test(prodWrangler) && !/BOOKINGS_ENABLED": "false"/.test(prodWrangler)) {
+  // jsonc may have different spacing
+  if (!prodWrangler.includes('"BOOKINGS_ENABLED": "false"')) {
+    fail("prod BOOKINGS_ENABLED must be false");
+  } else {
+    pass("prod BOOKINGS_ENABLED is false");
+  }
+} else {
+  pass("prod BOOKINGS_ENABLED is false");
+}
+if (!prodWrangler.includes('"EMAIL_SENDING_ENABLED": "false"')) {
+  fail("prod EMAIL_SENDING_ENABLED must be false");
+} else {
+  pass("prod EMAIL_SENDING_ENABLED is false");
+}
+
+const briksdal = readFileSync(
+  path.join(root, "src/lib/excursions/briksdal-glacier-olden-lake.ts"),
+  "utf8",
+);
+if (!briksdal.includes('path: "/excursions/briksdal-glacier-olden-lake"')) {
+  fail("Briksdal URL path changed");
+} else {
+  pass("Briksdal URL preserved");
+}
+if (!briksdal.includes("adultAmount: 96") || !briksdal.includes("childAmount: 56")) {
+  fail("Briksdal public prices missing");
+} else {
+  pass("Briksdal public prices present");
+}
+if (/adult_cost|child_cost|gross profit|€82|€41/.test(briksdal)) {
+  fail("internal costs leaked into Briksdal public excursion data");
+} else {
+  pass("no internal costs in Briksdal public excursion data");
+}
+if (/Shore Excursions Group|SEG\b/.test(briksdal)) {
+  fail("SEG exposed in Briksdal public excursion data");
+} else {
+  pass("no SEG in Briksdal public excursion data");
 }
 
 const chromeFiles = [

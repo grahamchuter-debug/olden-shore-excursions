@@ -6,6 +6,7 @@ export type ExcursionFaq = {
 export type ExcursionImage = {
   src: string;
   alt: string;
+  attributionKey?: string;
 };
 
 export type ExcursionBreadcrumb = {
@@ -38,6 +39,22 @@ export type ExcursionDurationOption = {
   tourEnd: string;
 };
 
+export type ExcursionPricing = {
+  currency: "EUR";
+  adultLabel: string;
+  adultAmount: number;
+  childLabel: string;
+  childAmount: number;
+  infantLabel: string;
+  infantAmount: number;
+  infantDisplay: string;
+};
+
+export type ExcursionSuitability = {
+  title: string;
+  points: readonly string[];
+};
+
 export type ExcursionData = {
   slug: string;
   path: string;
@@ -49,15 +66,19 @@ export type ExcursionData = {
   heroImage: string;
   heroImageAlt: string;
   heroBadge?: string;
+  heroOverlay?: "default" | "light";
+  pricing?: ExcursionPricing;
   summary: ExcursionSummary;
   snapshotCards?: readonly ExcursionSnapshotCard[];
   gallery: ExcursionImage[];
   highlights: string[];
   description: readonly string[];
   durationOptions?: readonly ExcursionDurationOption[];
+  suitability?: ExcursionSuitability;
   included: readonly string[];
   notIncluded: readonly string[];
   timingAdvice: readonly string[];
+  cancellationPolicy?: readonly string[];
   faqs: readonly ExcursionFaq[];
   breadcrumbs: readonly ExcursionBreadcrumb[];
   relatedLinks: readonly ExcursionRelatedLink[];

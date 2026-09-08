@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/json-ld";
 import { PageHero } from "@/components/page-hero";
 import { ShipScheduleBreadcrumbs } from "@/components/ship-schedule-breadcrumbs";
 import type { ExcursionData } from "@/lib/excursion-types";
+import { attributionForKey } from "@/lib/image-provenance";
 import { siteConfig } from "@/lib/site-config";
 import {
   buildBreadcrumbSchema,
@@ -41,6 +42,15 @@ function SnapshotCard({ label, value }: { label: string; value: string }) {
   );
 }
 
+function formatEuro(amount: number): string {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
 export function ExcursionDetailPage({ excursion }: ExcursionDetailPageProps) {
   const schema = [
     buildWebPageSchema({
@@ -52,13 +62,19 @@ export function ExcursionDetailPage({ excursion }: ExcursionDetailPageProps) {
     buildFaqSchema(excursion.faqs),
   ];
 
+  const pricing = excursion.pricing;
+
   return (
     <>
       <JsonLd data={schema} />
       <main className="min-h-screen bg-white text-slate-900">
         <ShipScheduleBreadcrumbs items={excursion.breadcrumbs} />
 
-        <PageHero image={excursion.heroImage} imageAlt={excursion.heroImageAlt}>
+        <PageHero
+          image={excursion.heroImage}
+          imageAlt={excursion.heroImageAlt}
+          overlay={excursion.heroOverlay ?? "default"}
+        >
           <h1 className="mb-4 text-3xl font-bold text-white sm:text-4xl md:text-5xl">
             {excursion.headline}
           </h1>
@@ -70,11 +86,37 @@ export function ExcursionDetailPage({ excursion }: ExcursionDetailPageProps) {
               {excursion.heroBadge}
             </p>
           ) : null}
-          <p
-            className={`${excursion.heroBadge ? "mt-3" : "mt-5"} badge-accent-red inline-flex rounded-full px-4 py-1.5 text-xs font-medium text-white/95 backdrop-blur-sm sm:text-sm`}
-          >
-            Return to ship on time, cruise passenger friendly
-          </p>
+          {pricing ? (
+            <div className="mt-5 flex flex-wrap gap-2 text-sm text-white/95 sm:text-base">
+              <span className="rounded-md bg-black/25 px-3 py-1.5 backdrop-blur-sm">
+                {excursion.summary.duration}
+              </span>
+              <span className="rounded-md bg-black/25 px-3 py-1.5 backdrop-blur-sm">
+                From Olden cruise port
+              </span>
+              <span className="rounded-md bg-black/25 px-3 py-1.5 backdrop-blur-sm">
+                {pricing.adultLabel} {formatEuro(pricing.adultAmount)}
+              </span>
+              <span className="rounded-md bg-black/25 px-3 py-1.5 backdrop-blur-sm">
+                {pricing.childLabel} {formatEuro(pricing.childAmount)}
+              </span>
+              <span className="rounded-md bg-black/25 px-3 py-1.5 backdrop-blur-sm">
+                {pricing.infantLabel} {pricing.infantDisplay}
+              </span>
+              <span className="rounded-md bg-black/25 px-3 py-1.5 backdrop-blur-sm">
+                45–60 minute glacier walk
+              </span>
+              <span className="rounded-md bg-black/25 px-3 py-1.5 backdrop-blur-sm">
+                Cruise-friendly timing
+              </span>
+            </div>
+          ) : (
+            <p
+              className={`${excursion.heroBadge ? "mt-3" : "mt-5"} badge-accent-red inline-flex rounded-full px-4 py-1.5 text-xs font-medium text-white/95 backdrop-blur-sm sm:text-sm`}
+            >
+              Return to ship on time, cruise passenger friendly
+            </p>
+          )}
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href={excursion.bookingHref ?? siteConfig.shoreExcursionsPath}
@@ -119,21 +161,79 @@ export function ExcursionDetailPage({ excursion }: ExcursionDetailPageProps) {
           </div>
         </section>
 
+        {pricing ? (
+          <section className="border-b bg-white">
+            <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
+              <h2 className="text-2xl font-bold text-slate-900">Prices</h2>
+              <p className="mt-2 max-w-2xl text-slate-600">
+                All prices in euros. Online requests are limited to 10 guests.
+                Travelling with a larger group?{" "}
+                <Link href="/contact" className="content-link">
+                  Contact us
+                </Link>{" "}
+                and we&apos;ll check availability.
+              </p>
+              <div className="mt-6 overflow-hidden rounded-xl border border-slate-200">
+                <table className="w-full text-left text-sm sm:text-base">
+                  <thead className="bg-surface-muted text-slate-600">
+                    <tr>
+                      <th className="px-4 py-3 font-semibold">Guest</th>
+                      <th className="px-4 py-3 font-semibold">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 bg-white text-slate-900">
+                    <tr>
+                      <td className="px-4 py-3">{pricing.adultLabel}</td>
+                      <td className="px-4 py-3 font-medium">
+                        {formatEuro(pricing.adultAmount)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3">{pricing.childLabel}</td>
+                      <td className="px-4 py-3 font-medium">
+                        {formatEuro(pricing.childAmount)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3">{pricing.infantLabel}</td>
+                      <td className="px-4 py-3 font-medium">
+                        {pricing.infantDisplay}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        ) : null}
+
         <section className="mx-auto max-w-6xl px-4 pt-12 sm:px-6 sm:pt-16">
           <h2 className="mb-6 text-2xl font-bold text-slate-900">Photo gallery</h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {excursion.gallery.map((image) => (
-              <figure
-                key={`${image.src}-${image.alt}`}
-                className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm"
-              >
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="aspect-[4/3] h-full w-full object-cover"
-                />
-              </figure>
-            ))}
+            {excursion.gallery.map((image, index) => {
+              const credit = attributionForKey(image.attributionKey);
+              return (
+                <figure
+                  key={`${image.src}-${image.alt}`}
+                  className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm"
+                >
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    width={1200}
+                    height={900}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    className="aspect-[4/3] h-full w-full object-cover"
+                  />
+                  {credit ? (
+                    <figcaption className="border-t border-slate-200 bg-white px-3 py-2 text-xs leading-5 text-slate-500">
+                      {credit}
+                    </figcaption>
+                  ) : null}
+                </figure>
+              );
+            })}
           </div>
         </section>
 
@@ -157,7 +257,7 @@ export function ExcursionDetailPage({ excursion }: ExcursionDetailPageProps) {
 
             {excursion.durationOptions &&
             excursion.durationOptions.length > 0 ? (
-              <ContentSection title="Tour duration options">
+              <ContentSection title="Itinerary">
                 <div className="space-y-8">
                   {excursion.durationOptions.map((option) => (
                     <div
@@ -170,10 +270,7 @@ export function ExcursionDetailPage({ excursion }: ExcursionDetailPageProps) {
                       <p className="mt-1 text-sm text-gray-600">
                         {option.duration} · Starting at {option.startingPoint}
                       </p>
-                      <p className="mt-4 text-sm font-semibold text-gray-800">
-                        Stops
-                      </p>
-                      <ol className="mt-2 list-decimal space-y-1.5 pl-5 leading-7">
+                      <ol className="mt-4 list-decimal space-y-3 pl-5 leading-7">
                         {option.stops.map((stop) => (
                           <li key={stop}>{stop}</li>
                         ))}
@@ -184,6 +281,16 @@ export function ExcursionDetailPage({ excursion }: ExcursionDetailPageProps) {
                     </div>
                   ))}
                 </div>
+              </ContentSection>
+            ) : null}
+
+            {excursion.suitability ? (
+              <ContentSection title={excursion.suitability.title}>
+                <ul className="list-disc space-y-2 pl-5 leading-7">
+                  {excursion.suitability.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
               </ContentSection>
             ) : null}
 
@@ -204,6 +311,17 @@ export function ExcursionDetailPage({ excursion }: ExcursionDetailPageProps) {
                 </ul>
               </ContentSection>
             </div>
+
+            {excursion.cancellationPolicy &&
+            excursion.cancellationPolicy.length > 0 ? (
+              <ContentSection title="Cancellation">
+                <ul className="list-disc space-y-2 pl-5 leading-7">
+                  {excursion.cancellationPolicy.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </ContentSection>
+            ) : null}
 
             <ContentSection title="Cruise passenger timing advice">
               <div className="space-y-4 leading-7">

@@ -77,7 +77,10 @@ export default function ContactPage() {
         <ul>
           <li>Confirm your ship’s official arrival or all aboard time</li>
           <li>Guarantee glacier, Skylift or coach operation</li>
-          <li>Process bookings or payments on this site</li>
+          <li>
+            Instantly confirm an excursion before the local operator booking is
+            secured
+          </li>
         </ul>
       </section>
     </ContentPage>

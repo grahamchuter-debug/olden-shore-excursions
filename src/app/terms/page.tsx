@@ -17,7 +17,7 @@ export default function TermsPage() {
   return (
     <ContentPage
       title="Terms of Use"
-      lead="These terms cover use of the Olden Shore Excursions website as an independent informational planning resource."
+      lead="These terms cover use of the Olden Shore Excursions website for Olden cruise-port planning and excursion requests."
       heroImage={siteImages.hero}
       heroImageAlt={imageAlts.hero}
       pagePath="/terms"
@@ -47,11 +47,25 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>No booking or payment on this site</h2>
+        <h2>Excursion requests and payment</h2>
         <p>
-          This website does not process bookings or payments. Any commercial
-          arrangements you make with third parties are between you and those
-          parties.
+          Selected Olden excursions may be requested online. When online checkout
+          is enabled, payment takes your request and does not confirm the
+          excursion until we email confirmation separately after arranging it with
+          the local operator. If we cannot confirm your excursion, you receive a
+          full refund.
+        </p>
+        <p>
+          Free cancellation up to 48 hours before departure. Cancellations within
+          48 hours of departure are non-refundable for customer cancellations. If
+          your cruise ship does not call at Olden, you receive a full refund.
+        </p>
+        <p>
+          Until online checkout is unlocked, contact{" "}
+          <a href={`mailto:${siteConfig.contactEmail}`}>
+            {siteConfig.contactEmail}
+          </a>{" "}
+          to request manually.
         </p>
       </section>
 

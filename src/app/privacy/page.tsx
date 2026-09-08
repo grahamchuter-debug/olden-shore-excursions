@@ -17,7 +17,7 @@ export default function PrivacyPage() {
   return (
     <ContentPage
       title="Privacy Policy"
-      lead="This privacy notice describes Olden Shore Excursions as it operates today: an informational cruise planning site without live booking or payment processing."
+      lead="This privacy notice describes how Olden Shore Excursions handles information for cruise-port planning and excursion requests."
       heroImage={siteImages.hero}
       heroImageAlt={imageAlts.hero}
       pagePath="/privacy"
@@ -47,16 +47,28 @@ export default function PrivacyPage() {
       </section>
 
       <section>
+        <h2>Excursion request data</h2>
+        <p>
+          When you submit an excursion request, we process the details you provide
+          (such as name, email, phone, cruise ship, date, guest counts, and any
+          child-seat or accessibility notes) to arrange the excursion with the
+          local operator and to send transactional emails about your request.
+        </p>
+        <p>
+          Payment card details are handled by our payment provider on their hosted
+          checkout pages. We do not store full card numbers on this website.
+        </p>
+      </section>
+
+      <section>
         <h2>What this site does not do</h2>
         <ul>
-          <li>It does not process online bookings or payments.</li>
           <li>
-            It does not currently operate a contact form that collects passenger
-            details on this site.
+            It does not include first-party marketing analytics packages in the
+            application source reviewed for this policy.
           </li>
           <li>
-            It does not include first-party analytics packages in the application
-            source reviewed for this policy.
+            It does not sell your personal information.
           </li>
         </ul>
       </section>
@@ -104,8 +116,7 @@ export default function PrivacyPage() {
       <section>
         <h2>Updates</h2>
         <p>
-          We may update this notice if the site’s functionality changes, for
-          example if a contact form, analytics or booking features are added.
+          We may update this notice if the site’s functionality changes.
         </p>
       </section>
     </ContentPage>

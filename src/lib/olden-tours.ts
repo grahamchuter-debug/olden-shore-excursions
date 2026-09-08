@@ -14,9 +14,9 @@ export const oldenTourCards: readonly OldenTourCard[] = [
     href: "/excursions/briksdal-glacier-olden-lake",
     image: siteImages.briksdalTour,
     imageAlt: imageAlts.briksdalTourCard,
-    title: "Briksdal Glacier and Olden Lake Discovery",
+    title: "Briksdal Glacier & Olden Lake",
     description:
-      "Headline Olden shore excursion to Briksdal Glacier, Olden Lake valley scenery, waterfalls, and a scenic drive from the cruise port, best for first-time visitors.",
+      "Four-hour guided shore excursion from Olden: Olden Lake, Little Red Church and the walk towards Briksdal Glacier. Adult €96 · Child €56 · Infant FREE.",
     badge: "Headline Tour",
   },
   {

@@ -9,12 +9,19 @@
     "lint": "eslint",
     "sync:schedules": "node scripts/sync-olden-schedules.mjs",
     "qa:olden": "node scripts/qa-olden-world20.mjs",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "test:booking": "npx --yes tsx --test shared/world-booking/booking.test.ts shared/world-booking/date-picker.test.ts workers/bookings/src/olden-security.test.ts workers/bookings/src/operator-refund.test.ts",
+    "bookings:dev": "wrangler dev --config workers/bookings/wrangler.jsonc --port 8795",
+    "bookings:migrate:test": "wrangler d1 migrations apply olden-bookings-test --remote --config workers/bookings/wrangler.jsonc",
+    "bookings:migrate:prod": "wrangler d1 migrations apply olden-bookings-prod --remote --config workers/bookings/wrangler.prod.jsonc",
+    "bookings:deploy:test": "wrangler deploy --config workers/bookings/wrangler.jsonc",
+    "bookings:deploy:prod": "wrangler deploy --config workers/bookings/wrangler.prod.jsonc"
   },
   "dependencies": {
     "next": "16.2.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "stripe": "^22.6.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -24,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5",
     "wrangler": "^4.94.0"
   }
