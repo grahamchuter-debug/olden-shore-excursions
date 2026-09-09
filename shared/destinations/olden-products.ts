@@ -70,7 +70,9 @@ export const OLDEN_CANCELLATION_COPY = {
     "If your ship misses Olden or the excursion is cancelled after confirmation, you will receive a full refund.",
   paymentNotConfirmation:
     "After payment, we'll arrange your excursion and send your confirmation as soon as it is confirmed. Payment does not mean the excursion is confirmed yet.",
-  meetingInstructions: "Meeting instructions will be provided with your confirmed excursion details.",
+  /** Automated confirmation only — supplier tour ticket (joining document) is sent manually. */
+  meetingInstructions:
+    "Your tour ticket, including your meeting instructions, will be sent separately.",
   overTenGuidance: "For groups larger than 10, email hello@oldenshoreexcursions.com before requesting.",
 } as const;
 

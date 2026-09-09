@@ -308,13 +308,14 @@ export function confirmedCustomerEmail(input: {
   brand: CustomerEmailShellInput["brand"];
 }): RequestReceiptContent {
   const guestsLabel = guestCountLabel(input.product, input.guests);
-  const meetingCopy = input.meetingInstructions?.trim()
+  // Joining/meeting details live on the supplier tour ticket (sent manually) — not in this email.
+  const ticketCopy = input.meetingInstructions?.trim()
     ? input.meetingInstructions.trim()
-    : "Meeting instructions will be provided with your confirmed excursion details.";
+    : "Your tour ticket, including your meeting instructions, will be sent separately.";
 
   const shell: CustomerEmailShellInput = {
     brand: customerBrand(input.brand),
-    preheader: "Your excursion places are confirmed.",
+    preheader: "Your excursion is confirmed — your tour ticket follows separately.",
     eyebrow: input.brand.siteName,
     headline: "Your excursion is confirmed",
     statusLabel: "Confirmed",
@@ -328,7 +329,7 @@ export function confirmedCustomerEmail(input: {
       amountLabel: input.amountLabel,
     }),
     closingParagraphs: [
-      meetingCopy,
+      ticketCopy,
       "If your cruise schedule changes, reply to this email with your booking reference and we'll help.",
     ],
   };
@@ -339,7 +340,7 @@ export function confirmedCustomerEmail(input: {
     bodyLines: [
       shell.introParagraphs[0],
       ...shell.summaryRows.map((row) => `${row.label}: ${row.value}`),
-      meetingCopy,
+      ticketCopy,
     ],
     shell,
   };

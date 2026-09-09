@@ -239,12 +239,41 @@ test("confirmed email uses confirmed language only for confirmed template", () =
     meetingInstructions: OLDEN_CANCELLATION_COPY.meetingInstructions,
     brand,
   });
+  const body = email.bodyLines.join("\n");
   assert.match(email.subject, /confirmed/i);
+  assert.equal(email.shell.headline, "Your excursion is confirmed");
   assert.equal(email.shell.statusTone, "confirmed");
   assert.match(email.shell.statusLabel, /^Confirmed$/i);
-  assert.match(email.bodyLines.join("\n"), /places are confirmed/i);
-  assert.match(email.bodyLines.join("\n"), /Meeting instructions/i);
-  assert.doesNotMatch(email.bodyLines.join("\n"), /Belize|SEG|voucher|e-ticket/i);
+  assert.match(body, /places are confirmed/i);
+  assert.match(body, /tour ticket/i);
+  assert.match(body, /meeting instructions.*sent separately|sent separately/i);
+  assert.doesNotMatch(body, /Belize|SEG|Norway Excursions|voucher|emergency|pickup time|meeting point:/i);
+  assert.equal(email.shell.eyebrow, "Olden Shore Excursions");
+});
+
+test("O-10F confirmed email does not invent joining details or supplier internals", () => {
+  const email = confirmedCustomerEmail({
+    reference: "W2ODE-O10F-CONF",
+    product: briksdal!,
+    cruise: {
+      date: "2027-07-15",
+      shipName: "Sky Princess",
+      shipSlug: "not-listed",
+      cruiseLine: "",
+      isCustomShip: true,
+      scheduleMatched: false,
+    },
+    guests: { adults: 2, children: 0, infants: 0 },
+    amountLabel: "EUR €192",
+    customerName: "Alex Traveller",
+    meetingInstructions: OLDEN_CANCELLATION_COPY.meetingInstructions,
+    brand,
+  });
+  const rendered = renderCustomerBookingEmailText(email.shell);
+  assert.match(rendered, /Your excursion is confirmed/);
+  assert.match(rendered, /Your tour ticket, including your meeting instructions, will be sent separately/);
+  assert.doesNotMatch(rendered, /SEG|Norway Excursions|adult_cost|info@wowatour\.com|fulfilment_mode/i);
+  assert.doesNotMatch(rendered, /emergency (number|phone)|what to bring|voucher code|pickup at/i);
 });
 
 test("unable-to-confirm email apologises and refunds without customer-cancel blame", () => {
