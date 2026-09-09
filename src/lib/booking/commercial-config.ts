@@ -31,9 +31,14 @@ export type OldenPublicBookingStatus =
 export const OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT =
   "PRODUCTION_READY_LOCKED" as const satisfies OldenPublicBookingStatus;
 
-/** Isolated Cloudflare TEST booking Worker (O-3 / O-4 proven). */
+/**
+ * Isolated Cloudflare TEST booking Worker (O-3 / O-4 proven).
+ * Live production builds must not embed this URL — only the TEST UI env keeps it.
+ */
 export const OLDEN_TEST_BOOKINGS_API_URL =
-  "https://olden-bookings-test.dark-violet-8d91.workers.dev";
+  process.env.NEXT_PUBLIC_OLDEN_BOOKING_UI === "test"
+    ? "https://olden-bookings-test.dark-violet-8d91.workers.dev"
+    : "";
 
 export type OldenBookingsApiTarget =
   | { mode: "test"; url: string }
@@ -55,9 +60,9 @@ function readEnv(env: EnvLike | undefined): EnvLike {
 
 function isTestWorkerUrl(url: string): boolean {
   const normalized = url.trim().replace(/\/$/, "");
-  return (
-    normalized === OLDEN_TEST_BOOKINGS_API_URL || /olden-bookings-test/i.test(normalized)
-  );
+  if (OLDEN_TEST_BOOKINGS_API_URL && normalized === OLDEN_TEST_BOOKINGS_API_URL) return true;
+  // Hostname guard remains even when the full TEST URL constant is stripped from live builds.
+  return /olden-bookings-test/i.test(normalized);
 }
 
 /**
@@ -69,6 +74,9 @@ export function resolveOldenBookingsApiTarget(env?: EnvLike): OldenBookingsApiTa
   const prodUrl = (e.NEXT_PUBLIC_OLDEN_BOOKINGS_API_URL ?? "").trim().replace(/\/$/, "");
 
   if (uiMode === "test") {
+    if (!OLDEN_TEST_BOOKINGS_API_URL) {
+      return { mode: "locked", url: null, reason: "missing_test_api_url" };
+    }
     return { mode: "test", url: OLDEN_TEST_BOOKINGS_API_URL };
   }
 

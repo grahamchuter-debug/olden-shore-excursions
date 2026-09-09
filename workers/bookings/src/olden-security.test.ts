@@ -357,7 +357,8 @@ test("frontend commercial-config defaults to PRODUCTION_READY_LOCKED without TES
   assert.match(src, /===\s*"test"/);
   assert.match(
     src,
-    /OLDEN_TEST_BOOKINGS_API_URL\s*=\s*"https:\/\/olden-bookings-test\.dark-violet-8d91\.workers\.dev"/,
+    /OLDEN_TEST_BOOKINGS_API_URL/,
+    /olden-bookings-test\.dark-violet-8d91\.workers\.dev/,
   );
   assert.match(src, /test_url_not_allowed_for_live/);
   assert.match(src, /missing_prod_api_url/);

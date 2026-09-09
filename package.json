@@ -12,7 +12,7 @@
     "sync:schedules": "node scripts/sync-olden-schedules.mjs",
     "qa:olden": "node scripts/qa-olden-world20.mjs",
     "deploy": "npm run build && wrangler deploy",
-    "test:booking": "npx --yes tsx --test shared/world-booking/booking.test.ts shared/world-booking/date-picker.test.ts shared/world-booking/phone.test.ts shared/world-booking/o8-isolation.test.ts workers/bookings/src/olden-security.test.ts workers/bookings/src/operator-refund.test.ts workers/bookings/src/belize-regression.test.ts workers/bookings/src/cross-destination-isolation.test.ts",
+    "test:booking": "NEXT_PUBLIC_OLDEN_BOOKING_UI=test npx --yes tsx --test shared/world-booking/booking.test.ts shared/world-booking/date-picker.test.ts shared/world-booking/phone.test.ts shared/world-booking/o8-isolation.test.ts workers/bookings/src/olden-security.test.ts workers/bookings/src/operator-refund.test.ts workers/bookings/src/belize-regression.test.ts workers/bookings/src/cross-destination-isolation.test.ts",
     "test:booking:belize-source": "npm --prefix \"/Users/graham.chuter/Desktop/Caribbean-World-2.0/Belize-Shore-Excursion\" run test:booking",
     "bookings:dev": "wrangler dev --config workers/bookings/wrangler.jsonc --port 8795",
     "bookings:migrate:test": "wrangler d1 migrations apply olden-bookings-test --remote --config workers/bookings/wrangler.jsonc",
