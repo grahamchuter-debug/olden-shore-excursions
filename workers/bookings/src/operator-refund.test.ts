@@ -458,7 +458,7 @@ test("refund J: LIVE header decline without valid operator authorisation — for
   assert.equal(booking?.status, "requested");
 });
 
-test("refund live path: tokenised LIVE review blocked when LIVE_PAYMENTS_CODE_ENABLED is false", async () => {
+test("refund live path: tokenised LIVE review allowed when LIVE_PAYMENTS_CODE_ENABLED is true", async () => {
   const db = createMemoryD1();
   const env = baseEnv(db, {
     PAYMENTS_MODE: "live",
@@ -473,21 +473,21 @@ test("refund live path: tokenised LIVE review blocked when LIVE_PAYMENTS_CODE_EN
     ),
     env,
   );
-  assert.equal(page.status, 503);
+  assert.equal(page.status, 200);
   const html = await page.text();
-  assert.match(html, /Unavailable|not available|live payments/i);
+  assert.match(html, /Unable to confirm|Decline|Refund/i);
 
   const calls = installStripeMock({});
   const restoreFetch = installResendMock("success");
   try {
     const action = await postDeclineAction(env, reference, token, {
-      auditReason: "Phase O-2 live path must stay locked",
+      auditReason: "O-13 live tokenised decline allowed",
     });
-    assert.equal(action.status, 503);
-    assert.equal(calls.length, 0);
+    assert.equal(action.status, 200);
+    assert.equal(calls.length, 1);
     const booking = await getBookingByReference(env, reference);
-    assert.equal(booking?.status, "requested");
-    assert.equal(booking?.payment_status, "paid");
+    assert.equal(booking?.status, "supplier_declined");
+    assert.equal(booking?.payment_status, "refunded");
   } finally {
     restoreFetch();
   }
@@ -684,8 +684,8 @@ function liveRecoveryEnv(db: D1Database, overrides: Record<string, unknown> = {}
   });
 }
 
-test("O-8B live unresolved + valid operator auth allowed without LIVE_PAYMENTS_CODE_ENABLED", async () => {
-  assert.equal(LIVE_PAYMENTS_CODE_ENABLED, false);
+test("O-8B live unresolved + valid operator auth allowed with LIVE_PAYMENTS_CODE_ENABLED", async () => {
+  assert.equal(LIVE_PAYMENTS_CODE_ENABLED, true);
   const db = createMemoryD1();
   const env = liveRecoveryEnv(db);
   const now = Date.now();

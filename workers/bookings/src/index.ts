@@ -3,7 +3,7 @@
  *
  * Stripe TEST (PAYMENTS_MODE=test) and LIVE (PAYMENTS_MODE=live) are supported.
  * Live requires LIVE_PAYMENTS_CODE_ENABLED + LIVE_PAYMENTS_UNLOCK + sk_live_ secret.
- * LIVE_PAYMENTS_CODE_ENABLED is false for Phase O-2 (production locked).
+ * LIVE_PAYMENTS_CODE_ENABLED is true for O-13 public launch (still needs unlock + bookings).
  * TEST and LIVE keys are never interchangeable.
  * Do not alter Belize / St Lucia / other destinations.
  */

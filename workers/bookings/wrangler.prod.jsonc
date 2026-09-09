@@ -17,8 +17,8 @@
   ],
   "vars": {
     "PAYMENTS_MODE": "live",
-    "BOOKINGS_ENABLED": "false",
-    "EMAIL_SENDING_ENABLED": "false",
+    "BOOKINGS_ENABLED": "true",
+    "EMAIL_SENDING_ENABLED": "true",
     "EMAIL_FROM": "bookings@notifications.wowatour.com",
     "EMAIL_FROM_NAME": "Olden Shore Excursions",
     "EMAIL_REPLY_TO": "hello@oldenshoreexcursions.com",

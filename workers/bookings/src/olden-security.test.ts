@@ -1,7 +1,7 @@
 /**
- * Olden booking security / commercial gate tests (Phase O-2).
- * No live Stripe. Uses Worker preview mode + shared pricing authority.
- * LIVE_PAYMENTS_CODE_ENABLED must remain false.
+ * Olden booking security / commercial gate tests (O-13 launch).
+ * No live Stripe calls in unit tests. Uses Worker preview mode + shared pricing authority.
+ * LIVE_PAYMENTS_CODE_ENABLED is true; other live gates (unlock, bookings, secrets) still apply.
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -68,13 +68,13 @@ function jsonReq(url: string, body: unknown) {
   });
 }
 
-test("LIVE_PAYMENTS_CODE_ENABLED is false for Olden Phase O-2", () => {
-  assert.equal(LIVE_PAYMENTS_CODE_ENABLED, false);
+test("LIVE_PAYMENTS_CODE_ENABLED is true for Olden O-13 public launch", () => {
+  assert.equal(LIVE_PAYMENTS_CODE_ENABLED, true);
 });
 
-test("production liveCheckoutBlock returns LIVE_PAYMENTS_BLOCKED while code flag is off", () => {
+test("production liveCheckoutBlock requires unlock even when code flag is on", () => {
   const product = findOldenBookingProduct(PRODUCT_ID)!;
-  const block = liveCheckoutBlock(
+  const ready = liveCheckoutBlock(
     {
       PAYMENTS_MODE: "live",
       LIVE_PAYMENTS_UNLOCK: "OLDEN_LIVE_UNLOCK",
@@ -86,8 +86,36 @@ test("production liveCheckoutBlock returns LIVE_PAYMENTS_BLOCKED while code flag
     },
     product,
   );
-  assert.ok(block);
-  assert.equal(block!.code, "LIVE_PAYMENTS_BLOCKED");
+  assert.equal(ready, null);
+
+  const missingUnlock = liveCheckoutBlock(
+    {
+      PAYMENTS_MODE: "live",
+      BOOKINGS_ENABLED: "true",
+      STRIPE_SECRET_KEY: "sk_live_fake",
+      STRIPE_WEBHOOK_SECRET: "whsec_fake",
+      SITE_BASE_URL: "https://oldenshoreexcursions.com",
+      DB: {} as D1Database,
+    },
+    product,
+  );
+  assert.ok(missingUnlock);
+  assert.equal(missingUnlock!.code, "LIVE_UNLOCK_REQUIRED");
+
+  const bookingsOff = liveCheckoutBlock(
+    {
+      PAYMENTS_MODE: "live",
+      LIVE_PAYMENTS_UNLOCK: "OLDEN_LIVE_UNLOCK",
+      BOOKINGS_ENABLED: "false",
+      STRIPE_SECRET_KEY: "sk_live_fake",
+      STRIPE_WEBHOOK_SECRET: "whsec_fake",
+      SITE_BASE_URL: "https://oldenshoreexcursions.com",
+      DB: {} as D1Database,
+    },
+    product,
+  );
+  assert.ok(bookingsOff);
+  assert.equal(bookingsOff!.code, "BOOKINGS_DISABLED");
 });
 
 test("BOOKINGS_ENABLED=false kill switch", () => {
@@ -305,11 +333,11 @@ test("internal product notes keep costs off public paths; no SEG in public paths
   }
 });
 
-test("production live code flag disabled in live-gate source", () => {
+test("production live code flag enabled in live-gate source", () => {
   const here = dirname(fileURLToPath(import.meta.url));
   const src = readFileSync(join(here, "live-gate.ts"), "utf8");
-  assert.match(src, /LIVE_PAYMENTS_CODE_ENABLED\s*=\s*false/);
-  assert.doesNotMatch(src, /LIVE_PAYMENTS_CODE_ENABLED\s*=\s*true/);
+  assert.match(src, /LIVE_PAYMENTS_CODE_ENABLED\s*=\s*true/);
+  assert.doesNotMatch(src, /LIVE_PAYMENTS_CODE_ENABLED\s*=\s*false/);
 });
 
 test("service name is olden-bookings", () => {
@@ -357,7 +385,8 @@ test("TEST Worker SITE_BASE_URL is local-safe; prod wrangler keeps public domain
   assert.match(testCfg, /"EMAIL_SENDING_ENABLED":\s*"false"/);
   assert.match(testCfg, /"EMAIL_REPLY_TO":\s*"hello@oldenshoreexcursions\.com"/);
   assert.match(prodCfg, /"SITE_BASE_URL":\s*"https:\/\/oldenshoreexcursions\.com"/);
-  assert.match(prodCfg, /"EMAIL_SENDING_ENABLED":\s*"false"/);
+  assert.match(prodCfg, /"BOOKINGS_ENABLED":\s*"true"/);
+  assert.match(prodCfg, /"EMAIL_SENDING_ENABLED":\s*"true"/);
   assert.match(prodCfg, /"EMAIL_REPLY_TO":\s*"hello@oldenshoreexcursions\.com"/);
   assert.doesNotMatch(prodCfg, /localhost:3000/);
 });

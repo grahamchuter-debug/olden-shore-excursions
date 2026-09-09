@@ -167,20 +167,15 @@ const prodWrangler = readFileSync(
   path.join(root, "workers/bookings/wrangler.prod.jsonc"),
   "utf8",
 );
-if (!/BOOKINGS_ENABLED":\s*"false"/.test(prodWrangler) && !/BOOKINGS_ENABLED": "false"/.test(prodWrangler)) {
-  // jsonc may have different spacing
-  if (!prodWrangler.includes('"BOOKINGS_ENABLED": "false"')) {
-    fail("prod BOOKINGS_ENABLED must be false");
-  } else {
-    pass("prod BOOKINGS_ENABLED is false");
-  }
+if (!prodWrangler.includes('"BOOKINGS_ENABLED": "true"')) {
+  fail("prod BOOKINGS_ENABLED must be true for O-13 launch");
 } else {
-  pass("prod BOOKINGS_ENABLED is false");
+  pass("prod BOOKINGS_ENABLED is true");
 }
-if (!prodWrangler.includes('"EMAIL_SENDING_ENABLED": "false"')) {
-  fail("prod EMAIL_SENDING_ENABLED must be false");
+if (!prodWrangler.includes('"EMAIL_SENDING_ENABLED": "true"')) {
+  fail("prod EMAIL_SENDING_ENABLED must be true for O-13 launch");
 } else {
-  pass("prod EMAIL_SENDING_ENABLED is false");
+  pass("prod EMAIL_SENDING_ENABLED is true");
 }
 
 const briksdal = readFileSync(
