@@ -66,6 +66,17 @@ test("live UI with explicit non-TEST production API URL is selectable", () => {
   assert.equal(resolveOldenPublicBookingStatus(env), "BOOKING_ENABLED");
 });
 
+test("O-12 commercial-config uses static NEXT_PUBLIC process.env members for client inlining", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { dirname, join } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(join(here, "../../src/lib/booking/commercial-config.ts"), "utf8");
+  assert.match(src, /process\.env\.NEXT_PUBLIC_OLDEN_BOOKING_UI/);
+  assert.match(src, /process\.env\.NEXT_PUBLIC_OLDEN_BOOKINGS_API_URL/);
+  assert.doesNotMatch(src, /process\.env as EnvLike/);
+});
+
 test("retention planner anonymises due contact and clears aged email payloads", () => {
   const plan = planRetentionActions({
     nowIso: "2030-01-01T00:00:00.000Z",

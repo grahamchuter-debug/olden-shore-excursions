@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import {
   getOldenBookingsApiUrl,
@@ -18,6 +18,12 @@ import {
 } from "@/lib/olden-schedules";
 import { siteConfig } from "@/lib/site-config";
 import { formatOldenChildSeatRequestNotes } from "../../../shared/destinations/olden-products";
+import {
+  composeE164Phone,
+  DEFAULT_PHONE_DIAL_CODE,
+  openNativeDatePicker,
+  PHONE_DIAL_OPTIONS,
+} from "../../../shared/world-booking";
 
 const PRODUCT = oldenCommercialConfig.products["briksdal-glacier-olden-lake"];
 
@@ -75,7 +81,9 @@ export function BriksdalBookingForm() {
   ]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phoneDial, setPhoneDial] = useState(DEFAULT_PHONE_DIAL_CODE);
+  const [phoneNational, setPhoneNational] = useState("");
+  const dateInputRef = useRef<HTMLInputElement>(null);
   const [notes, setNotes] = useState("");
   const [walkingAck, setWalkingAck] = useState(false);
   const [leadAdultAck, setLeadAdultAck] = useState(false);
@@ -159,8 +167,11 @@ export function BriksdalBookingForm() {
   }
 
   function validateDetails(): string | null {
-    if (!name.trim() || !email.trim() || !phone.trim()) {
+    if (!name.trim() || !email.trim()) {
       return "Please complete your contact details.";
+    }
+    if (!composeE164Phone(phoneDial, phoneNational)) {
+      return "Please choose your country code and enter a valid Mobile / WhatsApp number.";
     }
     return null;
   }
@@ -270,7 +281,7 @@ export function BriksdalBookingForm() {
           customer: {
             name: name.trim(),
             email: email.trim(),
-            phone: phone.trim(),
+            phone: composeE164Phone(phoneDial, phoneNational) || "",
             operationalNotes: operationalNotes || undefined,
           },
           confirmationAcknowledged: requestAck,
@@ -390,11 +401,14 @@ export function BriksdalBookingForm() {
           <label className="block text-sm font-medium text-slate-800">
             Excursion date
             <input
+              ref={dateInputRef}
               type="date"
               required
               min={todayIsoDate()}
               value={excursionDate}
               onChange={(e) => onDateChange(e.target.value)}
+              onClick={(e) => openNativeDatePicker(e.currentTarget, { clickFallback: false })}
+              onFocus={(e) => openNativeDatePicker(e.currentTarget, { clickFallback: false })}
               className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
             />
           </label>
@@ -663,15 +677,37 @@ export function BriksdalBookingForm() {
                 className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
               />
             </label>
-            <label className="block text-sm font-medium text-slate-800">
+            <label className="block text-sm font-medium text-slate-800 sm:col-span-2">
               Mobile / WhatsApp
-              <input
-                type="tel"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
-              />
+              <span className="mt-1 flex flex-col gap-2 sm:flex-row">
+                <select
+                  required
+                  aria-label="Country dial code"
+                  value={phoneDial}
+                  onChange={(e) => setPhoneDial(e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 sm:max-w-[14rem]"
+                >
+                  {PHONE_DIAL_OPTIONS.map((option) => (
+                    <option key={`${option.iso}-${option.dial}`} value={option.dial}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="tel"
+                  required
+                  inputMode="tel"
+                  autoComplete="tel-national"
+                  placeholder="Local mobile number"
+                  value={phoneNational}
+                  onChange={(e) => setPhoneNational(e.target.value)}
+                  className="w-full flex-1 rounded-lg border border-slate-300 px-3 py-2"
+                />
+              </span>
+              <span className="mt-1 block text-xs font-normal text-slate-500">
+                Include your country code so we can reach you on Mobile / WhatsApp. Stored as an
+                international number (for example +447700900123).
+              </span>
             </label>
             <label className="block text-sm font-medium text-slate-800 sm:col-span-2">
               Notes / special requirements (optional)

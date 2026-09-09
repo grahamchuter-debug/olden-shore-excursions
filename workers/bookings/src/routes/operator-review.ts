@@ -123,8 +123,14 @@ function bookingSummaryHtml(booking: NonNullable<Awaited<ReturnType<typeof getBo
 }
 
 function statusBadge(booking: NonNullable<Awaited<ReturnType<typeof getBookingByReference>>>) {
+  if (booking.payment_status === "refunded" || booking.payment_status === "refund_pending") {
+    if (booking.status === "confirmed") {
+      return booking.payment_status === "refund_pending" ? "Confirmed · Refund pending" : "Confirmed · Refunded";
+    }
+    return booking.payment_status === "refund_pending" ? "Declined · Refund pending" : "Declined · Refunded";
+  }
   if (booking.status === "confirmed") return "Confirmed";
-  if (booking.status === "supplier_declined" || booking.payment_status === "refunded") return "Declined · Refunded";
+  if (booking.status === "supplier_declined") return "Declined · Refunded";
   return "Paid · Supplier confirmation required";
 }
 
@@ -175,7 +181,11 @@ export async function handleOperatorReviewPage(request: Request, env: Env): Prom
   if (booking.status === "confirmed") {
     return htmlPage(
       "Booking confirmed",
-      `<div class="eyebrow">Olden booking request</div><h1>Booking already confirmed</h1><div class="badge">Confirmed</div><p class="muted">Reference ${escapeHtml(booking.booking_reference)} is already confirmed. The customer confirmation email was sent when this booking was actioned.</p>${bookingSummaryHtml(booking, amountLabel, guestsLabel)}`,
+      `<div class="eyebrow">Olden booking request</div><h1>Booking already confirmed</h1><div class="badge">${escapeHtml(statusBadge(booking))}</div><p class="muted">Reference ${escapeHtml(booking.booking_reference)} is already confirmed. The customer confirmation email was sent when this booking was actioned.${
+        booking.payment_status === "refunded" || booking.payment_status === "refund_pending"
+          ? " Payment has since been marked refunded."
+          : ""
+      }</p>${bookingSummaryHtml(booking, amountLabel, guestsLabel)}`,
     );
   }
 

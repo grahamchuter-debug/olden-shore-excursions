@@ -96,11 +96,31 @@ export async function markRefundedFromCharge(
   env: DbEnv,
   paymentIntentId: string,
   fullyRefunded: boolean,
+  refundId?: string | null,
 ): Promise<void> {
   const booking = await getBookingByPaymentIntentId(env, paymentIntentId);
   if (!booking) return;
   await updateBookingState(env, booking.booking_reference, {
-    status: booking.status === "confirmed" ? booking.status : booking.status === "supplier_declined" ? "supplier_declined" : "refunded",
+    // Keep booking lifecycle separate from payment: a confirmed excursion that is
+    // later refunded stays status=confirmed with payment_status=refunded.
+    status:
+      booking.status === "confirmed"
+        ? booking.status
+        : booking.status === "supplier_declined"
+          ? "supplier_declined"
+          : "refunded",
     payment_status: fullyRefunded ? "refunded" : "refund_pending",
+    stripe_refund_id: refundId?.trim() || null,
   });
+}
+
+/** Prefer the newest refund id on a Charge object (Stripe lists refunds newest-first). */
+export function refundIdFromCharge(charge: Stripe.Charge): string | null {
+  const rows = charge.refunds?.data;
+  if (!Array.isArray(rows) || rows.length === 0) return null;
+  for (const row of rows) {
+    const id = typeof row?.id === "string" ? row.id.trim() : "";
+    if (id.startsWith("re_")) return id;
+  }
+  return null;
 }

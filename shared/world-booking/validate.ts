@@ -1,7 +1,9 @@
 import type { BookableProductConfig, BookableWindow, BookingCruiseContext, BookingCustomer } from "./types";
+import { validateInternationalPhone } from "./phone";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 
 export type DateValidation =
   | { ok: true; inSchedule: boolean; warning?: string }
@@ -52,10 +54,7 @@ export function validateCustomer(customer: BookingCustomer): string | null {
   if (!EMAIL.test(customer.email.trim())) {
     return "Please enter a valid email address.";
   }
-  if (!customer.phone.trim() || customer.phone.replace(/\s/g, "").length < 8) {
-    return "Please enter a mobile or WhatsApp number so we can reach you about this request.";
-  }
-  return null;
+  return validateInternationalPhone(customer.phone);
 }
 
 export function validateCruise(cruise: BookingCruiseContext, now = new Date()): string | null {

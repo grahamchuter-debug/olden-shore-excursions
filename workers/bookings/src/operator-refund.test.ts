@@ -365,6 +365,43 @@ test("refund H: duplicate charge.refunded webhook — state stable, no duplicate
   }
 });
 
+test("O-12 charge.refunded persists stripe_refund_id and keeps confirmed status", async () => {
+  const db = createMemoryD1();
+  const env = baseEnv(db);
+  const reference = "W2ODE-REFUND-ID";
+  const pi = `pi_test_${reference}`;
+  await insertBooking(
+    env,
+    paidBooking(reference, {
+      status: "confirmed",
+      payment_status: "paid",
+      stripe_payment_intent_id: pi,
+      stripe_refund_id: null,
+    }),
+  );
+  await markRefundedFromCharge(env, pi, true, "re_o12_persist");
+  const booking = await getBookingByReference(env, reference);
+  assert.equal(booking?.status, "confirmed");
+  assert.equal(booking?.payment_status, "refunded");
+  assert.equal(booking?.stripe_refund_id, "re_o12_persist");
+
+  // Null must not wipe an existing refund id (COALESCE behaviour).
+  await markRefundedFromCharge(env, pi, true, null);
+  const again = await getBookingByReference(env, reference);
+  assert.equal(again?.stripe_refund_id, "re_o12_persist");
+});
+
+test("O-12 refundIdFromCharge reads newest re_ id from charge.refunds.data", async () => {
+  const { refundIdFromCharge } = await import("./fulfill");
+  const id = refundIdFromCharge({
+    refunds: {
+      data: [{ id: "re_newest" }, { id: "re_older" }],
+    },
+  } as never);
+  assert.equal(id, "re_newest");
+  assert.equal(refundIdFromCharge({ refunds: { data: [] } } as never), null);
+});
+
 test("refund I: client-supplied amount tampering ignored — server full refund only", async () => {
   const db = createMemoryD1();
   const env = baseEnv(db);

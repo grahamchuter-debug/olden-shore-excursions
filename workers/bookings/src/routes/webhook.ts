@@ -7,6 +7,7 @@ import {
   markPaymentFailedFromIntent,
   markPaymentFailedFromSession,
   markRefundedFromCharge,
+  refundIdFromCharge,
 } from "../fulfill";
 import { LIVE_PAYMENTS_CODE_ENABLED } from "../live-gate";
 import { enqueuePostPaymentNotifications } from "../notify";
@@ -81,7 +82,7 @@ export async function handleStripeWebhook(request: Request, env: Env, ctx?: Exec
         if (paymentIntentId) {
           const fullyRefunded =
             charge.refunded || (typeof charge.amount_refunded === "number" && charge.amount_refunded >= charge.amount);
-          await markRefundedFromCharge(env, paymentIntentId, fullyRefunded);
+          await markRefundedFromCharge(env, paymentIntentId, fullyRefunded, refundIdFromCharge(charge));
         }
         break;
       }
@@ -93,7 +94,10 @@ export async function handleStripeWebhook(request: Request, env: Env, ctx?: Exec
           if (paymentIntentId) {
             const booking = await getBookingByPaymentIntentId(env, paymentIntentId);
             if (booking && booking.payment_status !== "refunded") {
-              await markRefundedFromCharge(env, paymentIntentId, true);
+              await markRefundedFromCharge(env, paymentIntentId, true, refund.id ?? null);
+            } else if (booking && !booking.stripe_refund_id && refund.id) {
+              // Already refunded (e.g. via charge.refunded) but id missing — backfill only.
+              await markRefundedFromCharge(env, paymentIntentId, true, refund.id);
             }
           }
         }

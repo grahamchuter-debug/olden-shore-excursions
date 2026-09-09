@@ -43,7 +43,14 @@ export type OldenBookingsApiTarget =
 type EnvLike = Record<string, string | undefined>;
 
 function readEnv(env: EnvLike | undefined): EnvLike {
-  return env ?? (typeof process !== "undefined" ? (process.env as EnvLike) : {});
+  if (env) return env;
+  // NEXT_PUBLIC_* must be referenced as static process.env.KEY members so Next can
+  // inline them into the client bundle. Casting process.env and reading dynamically
+  // leaves the browser without values → PRODUCTION_READY_LOCKED after hydration.
+  return {
+    NEXT_PUBLIC_OLDEN_BOOKING_UI: process.env.NEXT_PUBLIC_OLDEN_BOOKING_UI,
+    NEXT_PUBLIC_OLDEN_BOOKINGS_API_URL: process.env.NEXT_PUBLIC_OLDEN_BOOKINGS_API_URL,
+  };
 }
 
 function isTestWorkerUrl(url: string): boolean {
