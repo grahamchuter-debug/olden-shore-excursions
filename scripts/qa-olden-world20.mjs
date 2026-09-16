@@ -28,12 +28,13 @@ const rows = data.rows || [];
 const integrity = data.integrity || {};
 
 const expected = {
-  total: 144,
+  total: 186,
   y2026: 90,
   y2027: 54,
+  y2028: 42,
   first: "2026-06-01",
-  last: "2027-11-02",
-  ships: 44,
+  last: "2028-10-03",
+  ships: 47,
   lines: 23,
 };
 
@@ -79,10 +80,10 @@ if (integrity.cruiseLines !== expected.lines) {
   pass(`cruise lines ${expected.lines}`);
 }
 
-if (integrity.has2028 || rows.some((r) => String(r.arrival_date).startsWith("2028"))) {
-  fail("2028 schedule data present");
+if ((integrity.byYear?.["2028"] ?? 0) !== 42 || !integrity.has2028) {
+  fail(`2028 ${integrity.byYear?.["2028"]}, expected 42`);
 } else {
-  pass("no 2028 schedule data");
+  pass(`2028 calls 42`);
 }
 
 const required = [
@@ -250,8 +251,8 @@ if (!sitemapSrc.includes("getSiteRoutes")) {
 }
 
 const monthKeys = [...new Set(rows.map((r) => r.arrival_date.slice(0, 7)))].sort();
-if (monthKeys.length !== 13) {
-  fail(`populated months ${monthKeys.length}, expected 13`);
+if (monthKeys.length !== 20) {
+  fail(`populated months ${monthKeys.length}, expected 20`);
 } else {
   pass("13 populated Olden months");
 }

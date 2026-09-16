@@ -7,9 +7,6 @@ const sourcePath = path.resolve(root, "../norway-shore-excursions/src/data/cruis
 const outPath = path.join(root, "src/data/olden-cruise-schedules.generated.json");
 const payload = JSON.parse(readFileSync(sourcePath, "utf8"));
 const rows = (payload.rows || []).filter((r) => r.port === "olden");
-if (rows.some((r) => String(r.arrival_date || "").startsWith("2028"))) {
-  console.error("ABORT: 2028"); process.exit(1);
-}
 const years = {};
 for (const r of rows) years[r.arrival_date.slice(0,4)] = (years[r.arrival_date.slice(0,4)]||0)+1;
 const ships = new Set(rows.map((r)=>r.ship));
