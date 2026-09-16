@@ -61,11 +61,13 @@ export default function TermsPage() {
           your cruise ship does not call at Olden, you receive a full refund.
         </p>
         <p>
-          Until online checkout is unlocked, contact{" "}
+          The Briksdal Glacier &amp; Olden Lake excursion may be booked online when
+          live checkout is enabled for that product. Other Olden excursions remain
+          enquiry-only — contact{" "}
           <a href={`mailto:${siteConfig.contactEmail}`}>
             {siteConfig.contactEmail}
           </a>{" "}
-          to request manually.
+          for help.
         </p>
       </section>
 

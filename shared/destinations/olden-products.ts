@@ -52,7 +52,7 @@ const SHARED_PENDING = [
   "Fulfilment: Graham places corresponding booking via Norway Excursions direct (INTERNAL — DIRECT_SUPPLIER_MANUAL).",
   "Payment received ≠ excursion confirmed.",
   "Online max 10 guests per booking (Graham online limit — not supplier capacity).",
-  "LIVE_PAYMENTS_CODE_ENABLED false until Phase O-3+ Graham unlock (request-to-book).",
+  "Live checkout product-scoped via LIVE_BOOKING_PRODUCT_SLUGS (briksdal-glacier-olden-lake only).",
   "Walking: ~45–60 minutes to glacier lake viewpoint; first section most challenging; then relatively even.",
   "Difficulty 2–3 / physically fit; proper footwear and weather layers; respect track warning signs.",
   "Mobility / stroller: do not publish blanket claim — ask before booking until supplier confirms for Graham’s fulfilment.",

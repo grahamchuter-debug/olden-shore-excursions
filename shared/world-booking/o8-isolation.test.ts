@@ -66,6 +66,24 @@ test("live UI with explicit non-TEST production API URL is selectable", () => {
   assert.equal(resolveOldenPublicBookingStatus(env), "BOOKING_ENABLED");
 });
 
+test("live UI enables only LIVE_BOOKING_PRODUCT_SLUGS products", async () => {
+  const { resolveProductPublicBookingStatus } = await import(
+    "../../src/lib/booking/commercial-config"
+  );
+  const env = {
+    NEXT_PUBLIC_OLDEN_BOOKING_UI: "live",
+    NEXT_PUBLIC_OLDEN_BOOKINGS_API_URL: "https://olden-bookings-prod.example.workers.dev",
+  };
+  assert.equal(
+    resolveProductPublicBookingStatus("briksdal-glacier-olden-lake", env),
+    "BOOKING_ENABLED",
+  );
+  assert.equal(
+    resolveProductPublicBookingStatus("private-briksdal-glacier-olden-lake", env),
+    "PRODUCTION_READY_LOCKED",
+  );
+});
+
 test("O-12 commercial-config uses static NEXT_PUBLIC process.env members for client inlining", async () => {
   const { readFileSync } = await import("node:fs");
   const { dirname, join } = await import("node:path");

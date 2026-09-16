@@ -158,10 +158,25 @@ const liveGate = readFileSync(
   path.join(root, "workers/bookings/src/live-gate.ts"),
   "utf8",
 );
-if (!/LIVE_PAYMENTS_CODE_ENABLED\s*=\s*false/.test(liveGate)) {
-  fail("LIVE_PAYMENTS_CODE_ENABLED must be false for O-2");
+if (!/LIVE_PAYMENTS_CODE_ENABLED\s*=\s*true/.test(liveGate)) {
+  fail("LIVE_PAYMENTS_CODE_ENABLED must be true for live pilot");
 } else {
-  pass("LIVE_PAYMENTS_CODE_ENABLED is false");
+  pass("LIVE_PAYMENTS_CODE_ENABLED is true");
+}
+
+const liveAllowlist = readFileSync(
+  path.join(root, "shared/destinations/olden-live-booking.ts"),
+  "utf8",
+);
+if (!liveAllowlist.includes("briksdal-glacier-olden-lake")) {
+  fail("LIVE_BOOKING_PRODUCT_SLUGS must include briksdal-glacier-olden-lake");
+} else {
+  pass("LIVE_BOOKING_PRODUCT_SLUGS includes Briksdal only product");
+}
+if (/private-briksdal|loen-skylift|olden-walking/.test(liveAllowlist)) {
+  fail("LIVE_BOOKING_PRODUCT_SLUGS must not include other Olden products");
+} else {
+  pass("LIVE_BOOKING_PRODUCT_SLUGS excludes other Olden products");
 }
 
 const prodWrangler = readFileSync(

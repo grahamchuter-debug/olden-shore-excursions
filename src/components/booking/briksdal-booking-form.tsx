@@ -8,7 +8,6 @@ import {
   isOldenBookingTestUiEnabled,
   isPublicBookingEnabled,
   oldenCommercialConfig,
-  resolveOldenPublicBookingStatus,
 } from "@/lib/booking/commercial-config";
 import {
   formatScheduleDate,
@@ -63,7 +62,7 @@ const STEPS: { id: Step; label: string }[] = [
 ];
 
 export function BriksdalBookingForm() {
-  const bookingLive = isPublicBookingEnabled(resolveOldenPublicBookingStatus());
+  const bookingLive = isPublicBookingEnabled(PRODUCT.publicBookingStatus);
   const testUi = isOldenBookingTestUiEnabled();
   const apiUrl = getOldenBookingsApiUrl();
 
@@ -347,15 +346,27 @@ export function BriksdalBookingForm() {
         </div>
       ) : null}
 
-      {!bookingLive ? (
+      {bookingLive ? (
+        <div
+          role="status"
+          className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-800"
+        >
+          <p className="font-semibold">Secure online booking request</p>
+          <p className="mt-2">
+            Choose your cruise date and guests and pay securely online. We&apos;ll
+            confirm your excursion with our local operator and email your final
+            confirmation. If we&apos;re unable to confirm your booking, you&apos;ll
+            receive a full refund.
+          </p>
+        </div>
+      ) : (
         <div
           role="status"
           className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-950"
         >
-          <p className="font-semibold">Online request checkout is production-locked</p>
+          <p className="font-semibold">Online booking is not available in this build</p>
           <p className="mt-2">
-            You can review prices and requirements below. Live card payment is not
-            enabled on the public site. For help, email{" "}
+            You can review prices and requirements below. For help, email{" "}
             <a
               className="font-medium underline"
               href={`mailto:${oldenCommercialConfig.email}?subject=Briksdal%20Glacier%20request`}
@@ -365,7 +376,7 @@ export function BriksdalBookingForm() {
             .
           </p>
         </div>
-      ) : null}
+      )}
 
       <nav aria-label="Booking steps" className="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide">
         {STEPS.map((item, index) => {
@@ -497,7 +508,7 @@ export function BriksdalBookingForm() {
           <h2 className="text-xl font-bold text-slate-900">2. Guests</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             <label className="block text-sm font-medium text-slate-800">
-              Adults (12+) · {formatEuro(PRODUCT.adultEur)}
+              Adults 12+ — {formatEuro(PRODUCT.adultEur)}
               <input
                 type="number"
                 min={1}
@@ -508,7 +519,7 @@ export function BriksdalBookingForm() {
               />
             </label>
             <label className="block text-sm font-medium text-slate-800">
-              Children (3–11) · {formatEuro(PRODUCT.childEur)}
+              Children 3–11 — {formatEuro(PRODUCT.childEur)}
               <input
                 type="number"
                 min={0}
@@ -519,7 +530,7 @@ export function BriksdalBookingForm() {
               />
             </label>
             <label className="block text-sm font-medium text-slate-800">
-              Infants (0–2) · FREE
+              Infants 0–2 — FREE
               <input
                 type="number"
                 min={0}
@@ -531,9 +542,8 @@ export function BriksdalBookingForm() {
             </label>
           </div>
           <p className="text-sm text-slate-600">
-            Party total: <strong>{partyTotal}</strong> / {PRODUCT.maxGuests} · Display
-            total <strong>{formatEuro(totalEur)}</strong> EUR (server confirms the
-            charge)
+            Party total: <strong>{partyTotal}</strong> / {PRODUCT.maxGuests} · Total:{" "}
+            <strong>{formatEuro(totalEur)}</strong> EUR
           </p>
           {overCapacity ? (
             <p className="text-sm text-red-700">

@@ -1,11 +1,13 @@
+import { isLiveBookingProductSlug } from "../../../shared/destinations/olden-live-booking";
 import { supplierRoutingIsPlaceholder } from "../../../shared/world-booking";
 import type { BookableProductConfig } from "../../../shared/world-booking/types";
 
 /**
- * Live charging requires this code flag AND env.LIVE_PAYMENTS_UNLOCK.
- * A single environment variable must never enable live cards.
+ * Live charging requires this code flag AND env.LIVE_PAYMENTS_UNLOCK
+ * AND a product on LIVE_BOOKING_PRODUCT_SLUGS.
+ * A single environment variable must never enable live cards globally.
  */
-/** O-13 public launch: live code flag ON. Checkout still requires unlock + bookings + live Stripe. */
+/** O-13+: live code flag ON. Checkout still requires unlock + bookings + live Stripe + product allowlist. */
 export const LIVE_PAYMENTS_CODE_ENABLED = true;
 
 export const LIVE_UNLOCK_PHRASE = "OLDEN_LIVE_UNLOCK";
@@ -42,6 +44,7 @@ export function liveReadinessGaps(
   if (!env.STRIPE_WEBHOOK_SECRET?.trim()) gaps.push("webhook_secret");
   if (!(env.SITE_BASE_URL || "").includes("oldenshoreexcursions.com")) gaps.push("site_base_url");
   if (!product || supplierRoutingIsPlaceholder(product)) gaps.push("supplier_routing");
+  if (!product || !isLiveBookingProductSlug(product.id)) gaps.push("product_not_allowlisted");
   return gaps;
 }
 
@@ -111,6 +114,13 @@ export function liveCheckoutBlock(
     return {
       code: "UNKNOWN_PRODUCT",
       message: "This excursion cannot be requested here.",
+    };
+  }
+  if (!isLiveBookingProductSlug(product.id)) {
+    return {
+      code: "PRODUCT_NOT_LIVE",
+      message:
+        "Live card payment is not enabled for this excursion. No payment was taken.",
     };
   }
   if (supplierRoutingIsPlaceholder(product)) {

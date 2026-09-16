@@ -367,15 +367,61 @@ test("frontend commercial-config defaults to PRODUCTION_READY_LOCKED without TES
   assert.doesNotMatch(src, /whsec_/);
 });
 
-test("package deploy/build scripts do not enable TEST booking UI", () => {
+test("production live Checkout requires product on LIVE_BOOKING_PRODUCT_SLUGS", () => {
+  const product = findOldenBookingProduct(PRODUCT_ID)!;
+  const ready = liveCheckoutBlock(
+    {
+      PAYMENTS_MODE: "live",
+      LIVE_PAYMENTS_UNLOCK: "OLDEN_LIVE_UNLOCK",
+      BOOKINGS_ENABLED: "true",
+      STRIPE_SECRET_KEY: "sk_live_x",
+      STRIPE_WEBHOOK_SECRET: "whsec_x",
+      SITE_BASE_URL: "https://oldenshoreexcursions.com",
+      DB: {} as D1Database,
+    },
+    product,
+  );
+  assert.equal(ready, null);
+
+  const notAllowlisted = liveCheckoutBlock(
+    {
+      PAYMENTS_MODE: "live",
+      LIVE_PAYMENTS_UNLOCK: "OLDEN_LIVE_UNLOCK",
+      BOOKINGS_ENABLED: "true",
+      STRIPE_SECRET_KEY: "sk_live_x",
+      STRIPE_WEBHOOK_SECRET: "whsec_x",
+      SITE_BASE_URL: "https://oldenshoreexcursions.com",
+      DB: {} as D1Database,
+    },
+    { ...product, id: "private-briksdal-glacier-olden-lake", slug: "private-briksdal-glacier-olden-lake" },
+  );
+  assert.equal(notAllowlisted?.code, "PRODUCT_NOT_LIVE");
+});
+
+test("package deploy uses live booking UI (not TEST) and product allowlist exists", () => {
   const here = dirname(fileURLToPath(import.meta.url));
   const pkg = JSON.parse(readFileSync(join(here, "../../../package.json"), "utf8")) as {
     scripts: Record<string, string>;
   };
-  assert.equal(pkg.scripts.build.includes("OLDEN_BOOKING_UI"), false);
-  assert.equal(pkg.scripts.deploy.includes("OLDEN_BOOKING_UI"), false);
+  assert.match(pkg.scripts.build, /build:booking-live/);
+  assert.match(pkg.scripts["build:booking-live"] || "", /NEXT_PUBLIC_OLDEN_BOOKING_UI=live/);
+  assert.match(
+    pkg.scripts["build:booking-live"] || "",
+    /olden-bookings-prod\.dark-violet-8d91\.workers\.dev/,
+  );
+  assert.match(pkg.scripts.deploy, /build:booking-live/);
+  assert.equal(pkg.scripts.deploy.includes("OLDEN_BOOKING_UI=test"), false);
   assert.match(pkg.scripts["dev:booking-test"] || "", /NEXT_PUBLIC_OLDEN_BOOKING_UI=test/);
   assert.match(pkg.scripts["build:booking-test"] || "", /NEXT_PUBLIC_OLDEN_BOOKING_UI=test/);
+  assert.match(pkg.scripts["build:locked"] || "", /^next build$/);
+
+  const allowlist = readFileSync(
+    join(here, "../../../shared/destinations/olden-live-booking.ts"),
+    "utf8",
+  );
+  assert.match(allowlist, /LIVE_BOOKING_PRODUCT_SLUGS/);
+  assert.match(allowlist, /briksdal-glacier-olden-lake/);
+  assert.doesNotMatch(allowlist, /private-briksdal|loen-skylift|olden-walking/);
 });
 
 test("TEST Worker SITE_BASE_URL is local-safe; prod wrangler keeps public domain", () => {
