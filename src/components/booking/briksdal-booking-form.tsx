@@ -351,10 +351,12 @@ export function BriksdalBookingForm() {
           role="status"
           className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-800"
         >
-          <p className="font-semibold">Secure online booking</p>
+          <p className="font-semibold">Secure online booking request</p>
           <p className="mt-2">
-            Choose your cruise date and guests, then pay securely online. You&apos;ll
-            receive confirmation by email after payment.
+            Choose your cruise date and guests and pay securely online. We&apos;ll
+            confirm your excursion with our local operator and email your final
+            confirmation. If we&apos;re unable to confirm your booking, you&apos;ll
+            receive a full refund.
           </p>
         </div>
       ) : (

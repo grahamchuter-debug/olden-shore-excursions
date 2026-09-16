@@ -109,8 +109,8 @@ export function BookingReferenceBanner() {
           Booking reference: <strong>{view.reference}</strong>
         </p>
         <p>
-          Payment verified. We&apos;ve received your excursion request and will email
-          you again once it is confirmed.
+          Payment received and booking request received. We&apos;ll confirm your
+          excursion with our local operator and email your final confirmation.
         </p>
       </div>
     );
