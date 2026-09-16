@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "dev:booking-test": "NEXT_PUBLIC_OLDEN_BOOKING_UI=test next dev",
-    "build": "next build",
+    "build": "npm run build:booking-live",
+    "build:locked": "next build",
     "build:booking-test": "NEXT_PUBLIC_OLDEN_BOOKING_UI=test next build",
     "build:booking-live": "NEXT_PUBLIC_OLDEN_BOOKING_UI=live NEXT_PUBLIC_OLDEN_BOOKINGS_API_URL=https://olden-bookings-prod.dark-violet-8d91.workers.dev next build",
     "start": "next start",

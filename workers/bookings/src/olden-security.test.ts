@@ -403,6 +403,7 @@ test("package deploy uses live booking UI (not TEST) and product allowlist exist
   const pkg = JSON.parse(readFileSync(join(here, "../../../package.json"), "utf8")) as {
     scripts: Record<string, string>;
   };
+  assert.match(pkg.scripts.build, /build:booking-live/);
   assert.match(pkg.scripts["build:booking-live"] || "", /NEXT_PUBLIC_OLDEN_BOOKING_UI=live/);
   assert.match(
     pkg.scripts["build:booking-live"] || "",
@@ -412,6 +413,7 @@ test("package deploy uses live booking UI (not TEST) and product allowlist exist
   assert.equal(pkg.scripts.deploy.includes("OLDEN_BOOKING_UI=test"), false);
   assert.match(pkg.scripts["dev:booking-test"] || "", /NEXT_PUBLIC_OLDEN_BOOKING_UI=test/);
   assert.match(pkg.scripts["build:booking-test"] || "", /NEXT_PUBLIC_OLDEN_BOOKING_UI=test/);
+  assert.match(pkg.scripts["build:locked"] || "", /^next build$/);
 
   const allowlist = readFileSync(
     join(here, "../../../shared/destinations/olden-live-booking.ts"),
