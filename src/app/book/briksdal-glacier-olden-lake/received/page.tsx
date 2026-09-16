@@ -22,7 +22,7 @@ export default function BriksdalReceivedPage() {
   return (
     <ContentPage
       title="Request received"
-      lead="We've received your payment and your excursion request. This is not a booking confirmation."
+      lead="We're verifying your payment and preparing your Briksdal Glacier & Olden Lake request. This is not a booking confirmation."
       heroImage={siteImages.briksdalTour}
       heroImageAlt={imageAlts.briksdalTourCard}
       pagePath="/book/briksdal-glacier-olden-lake/received"
@@ -46,14 +46,14 @@ export default function BriksdalReceivedPage() {
     >
       <section className="space-y-4 leading-7">
         <p>
-          We&apos;ve received your payment and your excursion request. This is not
-          a booking confirmation. We&apos;re arranging your Briksdal Glacier &amp;
-          Olden Lake excursion and will email you again once it is confirmed.
+          This page does not confirm your excursion by itself. Payment must be
+          verified with our payment provider, and your places are only confirmed
+          when we email confirmation separately.
         </p>
         <BookingReferenceBanner />
         <ul className="list-disc space-y-2 pl-5">
-          <li>Payment successful</li>
-          <li>Excursion request received — awaiting confirmation</li>
+          <li>Payment is verified by Stripe / our booking system — not by this URL alone</li>
+          <li>Excursion request awaits operator confirmation</li>
           <li>We&apos;ll email you separately when the excursion is confirmed</li>
           <li>
             If we&apos;re unable to confirm your excursion, you&apos;ll receive a

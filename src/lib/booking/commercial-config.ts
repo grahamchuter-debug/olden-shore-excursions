@@ -3,31 +3,35 @@
  * INTERNAL supplier costs / fulfilment notes must never be rendered here.
  *
  * Gate values:
- * - PRODUCTION_READY_LOCKED — journey visible; checkout disabled (default for
- *   production `npm run build` / `npm run deploy`)
+ * - PRODUCTION_READY_LOCKED — journey visible; checkout disabled (default when
+ *   UI mode is unset / invalid)
  * - BOOKING_ENABLED — checkout allowed in the UI only when an explicit UI mode
- *   AND a matching API target are both valid
+ *   AND a matching API target are both valid, and the product is on
+ *   LIVE_BOOKING_PRODUCT_SLUGS for live production
  *
  * TEST unlock (explicit, build-time):
  *   NEXT_PUBLIC_OLDEN_BOOKING_UI=test
  *   → always targets the isolated TEST Worker URL
  *
- * Future production unlock (explicit; not used by normal build/deploy):
+ * Live pilot unlock (product-scoped; production deploy):
  *   NEXT_PUBLIC_OLDEN_BOOKING_UI=live
  *   NEXT_PUBLIC_OLDEN_BOOKINGS_API_URL=<production Worker origin>
  *   → fails closed if the production URL is missing or points at TEST
- *
- * Production deploys must NOT set those envs. Without them, status stays locked
- * and getOldenBookingsApiUrl() returns null (never the TEST Worker).
+ *   → only allowlisted products (LIVE_BOOKING_PRODUCT_SLUGS) enable checkout UI
  */
 
+import {
+  isLiveBookingProductSlug,
+  LIVE_BOOKING_PRODUCT_SLUGS,
+  OLDEN_PROD_BOOKINGS_API_URL,
+} from "../../../shared/destinations/olden-live-booking";
 import { OLDEN_CANCELLATION_COPY } from "../../../shared/destinations/olden-products";
 
 export type OldenPublicBookingStatus =
   | "PRODUCTION_READY_LOCKED"
   | "BOOKING_ENABLED";
 
-/** Hard default — production static builds bake this in when env is unset. */
+/** Hard default — production static builds bake this in when live UI env is unset. */
 export const OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT =
   "PRODUCTION_READY_LOCKED" as const satisfies OldenPublicBookingStatus;
 
@@ -39,6 +43,8 @@ export const OLDEN_TEST_BOOKINGS_API_URL =
   process.env.NEXT_PUBLIC_OLDEN_BOOKING_UI === "test"
     ? "https://olden-bookings-test.dark-violet-8d91.workers.dev"
     : "";
+
+export { LIVE_BOOKING_PRODUCT_SLUGS, OLDEN_PROD_BOOKINGS_API_URL, isLiveBookingProductSlug };
 
 export type OldenBookingsApiTarget =
   | { mode: "test"; url: string }
@@ -101,10 +107,30 @@ export function isOldenBookingTestUiEnabled(env?: EnvLike): boolean {
   return (readEnv(env).NEXT_PUBLIC_OLDEN_BOOKING_UI ?? "").trim() === "test";
 }
 
-/** Resolved public status for this build. */
+/** True when the frontend was built for live production checkout (not TEST). */
+export function isOldenBookingLiveUiEnabled(env?: EnvLike): boolean {
+  return resolveOldenBookingsApiTarget(env).mode === "production";
+}
+
+/** Resolved public status for this build (API target only — not product-scoped). */
 export function resolveOldenPublicBookingStatus(env?: EnvLike): OldenPublicBookingStatus {
   const target = resolveOldenBookingsApiTarget(env);
   return target.mode === "locked" ? OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT : "BOOKING_ENABLED";
+}
+
+/**
+ * Product-scoped public checkout status.
+ * Live production UI only enables allowlisted products; TEST UI enables for engine testing.
+ */
+export function resolveProductPublicBookingStatus(
+  productIdOrSlug: string,
+  env?: EnvLike,
+): OldenPublicBookingStatus {
+  const target = resolveOldenBookingsApiTarget(env);
+  if (target.mode === "locked") return OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT;
+  if (target.mode === "test") return "BOOKING_ENABLED";
+  // Live production: only allowlisted products.
+  return isLiveBookingProductSlug(productIdOrSlug) ? "BOOKING_ENABLED" : OLDEN_PUBLIC_BOOKING_STATUS_DEFAULT;
 }
 
 /**
@@ -149,9 +175,9 @@ export const oldenCommercialConfig = {
       maxGuests: 10,
       requiresWalkingAck: true,
       get publicBookingStatus(): OldenPublicBookingStatus {
-        return resolveOldenPublicBookingStatus();
+        return resolveProductPublicBookingStatus("briksdal-glacier-olden-lake");
       },
-      displayPrice: "Adult 12+ €96 · Child 3–11 €56 · Infant 0–2 FREE",
+      displayPrice: "Adults 12+ — €96 · Children 3–11 — €56 · Infants 0–2 — FREE",
     },
   },
 } as const;
