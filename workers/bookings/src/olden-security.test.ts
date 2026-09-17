@@ -210,6 +210,33 @@ test("past date rejection", () => {
   );
 });
 
+test("scheduleMatched ship must exist on Olden date; manual ships allowed", async () => {
+  const { validateOldenScheduleShip } = await import("./olden-schedule");
+  assert.equal(
+    validateOldenScheduleShip({
+      date: "2026-09-21",
+      shipName: "Britannia",
+      scheduleMatched: true,
+    }),
+    null,
+  );
+  assert.ok(
+    validateOldenScheduleShip({
+      date: "2026-09-21",
+      shipName: "Not A Real Ship",
+      scheduleMatched: true,
+    }),
+  );
+  assert.equal(
+    validateOldenScheduleShip({
+      date: "2026-09-24",
+      shipName: "Custom Ship",
+      scheduleMatched: false,
+    }),
+    null,
+  );
+});
+
 test("invalid email / zero party / missing fields", () => {
   const product = findOldenBookingProduct(PRODUCT_ID)!;
   assert.throws(() => calculateBookingQuote(product, { adults: 0, children: 0, infants: 0 }));

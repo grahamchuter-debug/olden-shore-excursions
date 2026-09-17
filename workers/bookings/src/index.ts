@@ -28,6 +28,7 @@ import { corsHeaders, jsonResponse, withCors } from "./cors";
 import { emailSendingEnabled } from "./email";
 import { formatMajorMoneyForEmail } from "./logic";
 import { LIVE_PAYMENTS_CODE_ENABLED, bookingsAreEnabled } from "./live-gate";
+import { validateOldenScheduleShip } from "./olden-schedule";
 import { handleCreateCheckout } from "./routes/checkout";
 import { handleOperatorConfirm, handleOperatorDecline, handleOperatorReissueReview, handleOperatorUnresolved } from "./routes/operator";
 import { handleOperatorReviewAction, handleOperatorReviewPage } from "./routes/operator-review";
@@ -158,6 +159,14 @@ async function handlePreviewRequest(request: Request, env: Env): Promise<Respons
   if (customerError) return jsonResponse({ ok: false, code: "CUSTOMER", message: customerError }, 400);
   const cruiseError = validateCruise(body.cruise);
   if (cruiseError) return jsonResponse({ ok: false, code: "CRUISE", message: cruiseError }, 400);
+  const scheduleShipError = validateOldenScheduleShip({
+    date: body.cruise.date,
+    shipName: body.cruise.shipName,
+    scheduleMatched: Boolean(body.cruise.scheduleMatched),
+  });
+  if (scheduleShipError) {
+    return jsonResponse({ ok: false, code: "CRUISE", message: scheduleShipError }, 400);
+  }
   if (!body.confirmationAcknowledged) {
     return jsonResponse({ ok: false, code: "CONSENT", message: "Please acknowledge that this is a request, not a confirmation." }, 400);
   }

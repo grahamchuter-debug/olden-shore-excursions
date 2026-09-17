@@ -22,6 +22,7 @@ import {
   updateBookingStripeIds,
 } from "../db";
 import { bookingsAreEnabled, liveCheckoutBlock } from "../live-gate";
+import { validateOldenScheduleShip } from "../olden-schedule";
 import { createStripe } from "../stripe";
 import { assertStripeTestSecret, StripeModeError } from "../stripe-guard";
 
@@ -155,6 +156,14 @@ export async function handleCreateCheckout(request: Request, env: Env): Promise<
   if (customerError) return jsonResponse({ ok: false, code: "CUSTOMER", message: customerError }, 400);
   const cruiseError = validateCruise(body.cruise);
   if (cruiseError) return jsonResponse({ ok: false, code: "CRUISE", message: cruiseError }, 400);
+  const scheduleShipError = validateOldenScheduleShip({
+    date: body.cruise.date,
+    shipName: body.cruise.shipName,
+    scheduleMatched: Boolean(body.cruise.scheduleMatched),
+  });
+  if (scheduleShipError) {
+    return jsonResponse({ ok: false, code: "CRUISE", message: scheduleShipError }, 400);
+  }
   if (!body.confirmationAcknowledged) {
     return jsonResponse(
       { ok: false, code: "CONSENT", message: "Please acknowledge that this is a request, not a confirmation." },
@@ -294,8 +303,11 @@ export async function handleCreateCheckout(request: Request, env: Env): Promise<
     booking_session_id: body.bookingSessionId.slice(0, 40),
     product_id: product.id.slice(0, 40),
     destination: product.destinationId.slice(0, 40),
+    port: "Olden",
     cruise_date: body.cruise.date,
     ship: body.cruise.shipName.slice(0, 80),
+    ship_slug: (body.cruise.shipSlug || "").slice(0, 60),
+    schedule_matched: body.cruise.scheduleMatched ? "1" : "0",
     guest_count: String(guestCount),
     payments_mode: paymentsMode,
   };

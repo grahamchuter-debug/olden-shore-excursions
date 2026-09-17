@@ -12,7 +12,10 @@ import {
 import {
   formatScheduleDate,
   getOldenEntriesForDate,
+  normalizeIsoDate,
   scheduleDisclaimer,
+  scheduleEntryKey,
+  slugifyShipName,
   type OldenScheduleEntry,
 } from "@/lib/olden-schedules";
 import { siteConfig } from "@/lib/site-config";
@@ -96,7 +99,7 @@ export function BriksdalBookingForm() {
   );
 
   const selectedScheduleShip = scheduleShips.find(
-    (entry) => `${entry.ship}|${entry.arrival}|${entry.departure}` === selectedShipKey,
+    (entry) => scheduleEntryKey(entry) === selectedShipKey,
   );
 
   const shipName =
@@ -107,6 +110,10 @@ export function BriksdalBookingForm() {
   const cruiseLine =
     shipChoice === "schedule" ? selectedScheduleShip?.cruiseLine || "" : "";
   const scheduleMatched = shipChoice === "schedule" && Boolean(selectedScheduleShip);
+  const distinctScheduleShipCount = useMemo(
+    () => new Set(scheduleShips.map((entry) => entry.ship.trim())).size,
+    [scheduleShips],
+  );
 
   const youngCount = children + infants;
   const partyTotal = adults + children + infants;
@@ -144,9 +151,9 @@ export function BriksdalBookingForm() {
     if (excursionDate < todayIsoDate()) return "Please choose a future excursion date.";
     if (shipChoice === "schedule") {
       if (!scheduleShips.length) {
-        return "No ships are listed for that date — choose “Ship not listed” and enter the name.";
+        return "We don’t have a published ship call for that date — choose “My ship isn’t listed” and enter the name.";
       }
-      if (!selectedScheduleShip) return "Please select your cruise ship.";
+      if (!selectedScheduleShip) return "Please select which ship you are sailing on.";
     } else if (!customShipName.trim()) {
       return "Please enter your cruise ship name.";
     }
@@ -271,7 +278,7 @@ export function BriksdalBookingForm() {
           cruise: {
             date: excursionDate,
             shipName,
-            shipSlug: scheduleMatched ? "schedule-matched" : "not-listed",
+            shipSlug: scheduleMatched ? slugifyShipName(shipName) : "not-listed",
             cruiseLine,
             isCustomShip: !scheduleMatched,
             scheduleMatched,
@@ -317,13 +324,14 @@ export function BriksdalBookingForm() {
   }
 
   function onDateChange(value: string) {
-    setExcursionDate(value);
+    const iso = normalizeIsoDate(value) || value.trim();
+    setExcursionDate(iso);
     setSelectedShipKey("");
-    const ships = value ? getOldenEntriesForDate(value) : [];
+    const ships = iso ? getOldenEntriesForDate(iso) : [];
     if (ships.length === 1) {
-      const only = ships[0];
+      const only = ships[0]!;
       setShipChoice("schedule");
-      setSelectedShipKey(`${only.ship}|${only.arrival}|${only.departure}`);
+      setSelectedShipKey(scheduleEntryKey(only));
     } else if (ships.length === 0) {
       setShipChoice("custom");
     } else {
@@ -429,11 +437,17 @@ export function BriksdalBookingForm() {
               {scheduleShips.length > 0 ? (
                 <>
                   <p className="text-sm font-medium text-slate-800">
-                    Ships listed for {formatScheduleDate(excursionDate)}
+                    {distinctScheduleShipCount > 1
+                      ? "Which ship are you sailing on?"
+                      : "Select your cruise ship"}
                   </p>
-                  <div className="space-y-2">
+                  <p className="text-sm text-slate-600">
+                    We&apos;ve matched the cruise ships visiting Olden on{" "}
+                    {formatScheduleDate(excursionDate)}. Select yours below.
+                  </p>
+                  <div className="space-y-2" role="radiogroup" aria-label="Cruise ship">
                     {scheduleShips.map((entry) => {
-                      const key = `${entry.ship}|${entry.arrival}|${entry.departure}`;
+                      const key = scheduleEntryKey(entry);
                       return (
                         <label
                           key={key}
@@ -450,7 +464,9 @@ export function BriksdalBookingForm() {
                             className="mt-1"
                           />
                           <span>
-                            <strong>{entry.ship}</strong>
+                            <strong>
+                              {distinctScheduleShipCount === 1 ? `Cruise ship: ${entry.ship}` : entry.ship}
+                            </strong>
                             {entry.cruiseLine ? ` · ${entry.cruiseLine}` : ""}
                             <br />
                             <span className="text-slate-600">
@@ -464,8 +480,8 @@ export function BriksdalBookingForm() {
                 </>
               ) : (
                 <p className="text-sm text-slate-600">
-                  No published ship call for this date in our schedule import. Enter
-                  your ship name below.
+                  We don&apos;t currently have a published ship call for this date.
+                  Enter your ship name below and we&apos;ll verify it with your booking.
                 </p>
               )}
 
@@ -478,7 +494,7 @@ export function BriksdalBookingForm() {
                   className="mt-1"
                 />
                 <span className="w-full">
-                  Ship not listed / different ship
+                  My ship isn&apos;t listed
                   <input
                     type="text"
                     value={customShipName}
