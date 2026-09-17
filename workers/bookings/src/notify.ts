@@ -42,13 +42,14 @@ function guestsFromBooking(booking: BookingRow) {
 }
 
 function cruiseFromBooking(booking: BookingRow) {
+  const scheduleMatched = Boolean(booking.ship_slug && booking.ship_slug !== "not-listed");
   return {
     date: booking.cruise_date,
     shipName: booking.ship_name,
     shipSlug: booking.ship_slug || "not-listed",
     cruiseLine: "",
-    isCustomShip: booking.ship_slug === "not-listed",
-    scheduleMatched: false,
+    isCustomShip: !scheduleMatched,
+    scheduleMatched,
   };
 }
 

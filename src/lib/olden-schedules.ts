@@ -42,6 +42,7 @@ type SchedulePayload = {
 };
 
 const payload = schedulePayload as SchedulePayload;
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 export const oldenScheduleIntegrity = payload.integrity;
 export const oldenScheduleMeta = {
@@ -64,6 +65,30 @@ const MONTH_NAMES = [
   "november",
   "december",
 ] as const;
+
+/** Normalise booking/schedule date keys to YYYY-MM-DD (trim only — no timezone shift). */
+export function normalizeIsoDate(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!ISO_DATE.test(trimmed)) return null;
+  return trimmed;
+}
+
+/** Stable radio/list key for a schedule call (ship + timing). */
+export function scheduleEntryKey(entry: Pick<OldenScheduleEntry, "ship" | "arrival" | "departure">): string {
+  return `${entry.ship.trim()}|${entry.arrival}|${entry.departure}`;
+}
+
+/** Slug for D1 / Stripe metadata when the ship matched a published call. */
+export function slugifyShipName(shipName: string): string {
+  const slug = shipName
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+  return slug || "schedule-matched";
+}
 
 export function monthKeyToSlug(monthKey: string): string {
   const [year, month] = monthKey.split("-");
@@ -133,12 +158,27 @@ export function getOldenEntriesForMonthKey(monthKey: string): OldenScheduleEntry
     .sort((a, b) => a.date.localeCompare(b.date) || a.ship.localeCompare(b.ship));
 }
 
-/** Ships calling Olden on a single ISO date (YYYY-MM-DD). */
+/**
+ * Ships calling Olden on a single ISO date (YYYY-MM-DD).
+ * Same generated JSON as /ship-schedule — build-time embedded, not a separate booking dataset.
+ */
 export function getOldenEntriesForDate(isoDate: string): OldenScheduleEntry[] {
+  const date = normalizeIsoDate(isoDate);
+  if (!date) return [];
   return payload.rows
-    .filter((row) => row.arrival_date === isoDate)
+    .filter((row) => row.arrival_date === date)
     .map(toEntry)
-    .sort((a, b) => a.ship.localeCompare(b.ship));
+    .sort(
+      (a, b) =>
+        a.ship.localeCompare(b.ship) ||
+        a.arrival.localeCompare(b.arrival) ||
+        a.departure.localeCompare(b.departure),
+    );
+}
+
+/** Distinct ship names published for a date (for server-side match checks). */
+export function getOldenShipNamesForDate(isoDate: string): string[] {
+  return [...new Set(getOldenEntriesForDate(isoDate).map((entry) => entry.ship.trim()).filter(Boolean))];
 }
 
 export function getOldenMonthKeysWithCalls(): string[] {
@@ -166,4 +206,4 @@ export function shipScheduleMonthPath(slug: string): string {
 }
 
 export const scheduleDisclaimer =
-  "Published times come from the Norway Shore Excursions master schedule import. Always confirm arrival, departure and all aboard with your cruise line before finalising plans.";
+  "Published arrival and departure times are for planning. Always confirm timings and all aboard with your cruise line before finalising plans.";
